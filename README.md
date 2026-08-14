@@ -1,100 +1,90 @@
-# vinext-starter
+# Sistema de Riego Inteligente
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Proyecto educativo de la **Unidad Educativa Fiscal Samborondón** que integra agricultura de precisión, automatización por microzonas y alimentación mediante energía solar.
 
-## Prerequisites
+![Presentación del Sistema de Riego Inteligente](public/og.png)
 
-- Node.js `>=22.13.0`
+## Visión del proyecto
 
-## Quick Start
+La maqueta funcional mide **1 metro de ancho por 2 metros de largo** y representa tres zonas agrícolas independientes:
+
+- Zona A: tomate.
+- Zona B: lechuga.
+- Zona C: pimiento.
+
+Cada zona utiliza un sensor capacitivo de humedad. El controlador ESP32 compara las lecturas con umbrales configurables, identifica la mayor necesidad hídrica y activa únicamente el canal correspondiente. Después de cada pulso se aplica un periodo de estabilización para evitar decisiones repetitivas y exceso de agua.
+
+La maqueta sirve como unidad mínima de una arquitectura escalable hacia plantaciones agrícolas, donde las microzonas evolucionan a sectores hidráulicos, válvulas de campo y estaciones remotas.
+
+## Página interactiva
+
+La experiencia web incluye:
+
+- Simulador de humedad para las tres zonas.
+- Priorización automática del sector con mayor déficit.
+- Protección por nivel bajo del tanque.
+- Simulación de sequía y ciclos de riego.
+- Selector conceptual de escala agrícola por hectáreas.
+- Arquitectura energética y electrónica.
+- Guía resumida de instalación y puesta en marcha.
+- Galería del prototipo final.
+- Descarga del informe general del proyecto.
+
+Sitio publicado: [sistema-riego-inteligente-samborondon.eemite.chatgpt.site](https://sistema-riego-inteligente-samborondon.eemite.chatgpt.site)
+
+> El sitio está configurado con acceso privado y puede solicitar autenticación con ChatGPT.
+
+## Arquitectura técnica
+
+- **Control:** ESP32.
+- **Sensado:** tres sensores capacitivos de humedad y sensor de nivel.
+- **Actuación:** tres bombas o canales de potencia independientes mediante MOSFET.
+- **Energía:** panel solar, controlador de carga, batería AGM elevada y convertidor DC–DC.
+- **Interfaz:** pantalla local y panel web dinámico.
+- **Seguridad:** fusibles, canaletas, caja protegida y separación entre agua, potencia y señales.
+
+El núcleo trabaja en corriente continua: bombas de 12 V y conversión a 5 V para el ESP32. El inversor del kit se conserva como salida auxiliar.
+
+## Ejecutar localmente
+
+Requiere Node.js `>=22.13.0`.
 
 ```bash
 npm install
 npm run dev
-npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+Abra `http://localhost:3000` en el navegador.
 
-## Included Shape
+## Verificación
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Email and name are intended for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+npm run lint
+npm test
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+`npm test` genera la compilación de producción y comprueba el contenido institucional, las interacciones principales y la presencia de los recursos de presentación.
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+## Estructura principal
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+```text
+app/
+  page.tsx          Experiencia interactiva
+  globals.css       Diseño premium y adaptación móvil
+public/
+  og.png            Portada institucional
+  proyecto-*.png    Visualizaciones del prototipo
+  estacion-solar.png
+  logo-institucion.jpeg
+  Informe_general_Sistema_de_Riego_Inteligente.docx
+tests/
+  rendered-html.test.mjs
+```
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+## Validación responsable
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+El proyecto evita afirmar porcentajes de ahorro antes de medirlos. Su impacto se demuestra registrando lecturas, litros aplicados, uniformidad por zona, autonomía energética y respuesta de los cultivos durante ensayos comparativos.
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+---
 
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+**Unidad Educativa Fiscal Samborondón · Samborondón, Ecuador · 2026**
