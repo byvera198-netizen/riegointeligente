@@ -30,11 +30,11 @@ const initialZones: Zone[] = [
 ];
 
 const categoryImages: Record<Category, string> = {
-  Energía: "/03-kit-energia-solar.png",
-  Control: "/06-electronica-control.png",
-  Sensores: "/05-sensores-instrumentacion.png",
-  Hidráulica: "/04-kit-hidraulico.png",
-  Estructura: "/09-estructura-seguridad.png",
+  Energía: "/03-kit-energia-solar.jpg",
+  Control: "/06-electronica-control.jpg",
+  Sensores: "/05-sensores-instrumentacion.jpg",
+  Hidráulica: "/04-kit-hidraulico.jpg",
+  Estructura: "/09-estructura-seguridad.jpg",
 };
 
 const components: Component[] = [
@@ -81,16 +81,16 @@ const components: Component[] = [
 ];
 
 const gallery = [
-  ["/01-maqueta-completa.png", "Maqueta completa", "Prototipo funcional de 1 × 2 metros"],
-  ["/02-arquitectura-principal.png", "Arquitectura principal", "Energía, agua, control y comunicación"],
-  ["/03-kit-energia-solar.png", "Energía solar", "Componentes fotovoltaicos y protecciones"],
-  ["/04-kit-hidraulico.png", "Sistema hidráulico", "Tanque, bomba, válvulas y distribución"],
-  ["/05-sensores-instrumentacion.png", "Instrumentación", "Sensores de campo resistentes y medibles"],
-  ["/06-electronica-control.png", "Automatización", "Controlador, módulos, gabinete y mandos"],
-  ["/07-conexion-electrica.png", "Conexión eléctrica", "Distribución DC protegida y documentada"],
-  ["/08-conexion-hidraulica.png", "Conexión hidráulica", "Tres zonas independientes y seis emisores"],
-  ["/09-estructura-seguridad.png", "Montaje y seguridad", "Estructura, herramientas y protección"],
-  ["/10-control-remoto-web.png", "Aplicación web", "Supervisión responsiva desde cualquier dispositivo"],
+  ["/01-maqueta-completa.jpg", "Maqueta completa", "Prototipo funcional de 1 × 2 metros"],
+  ["/02-arquitectura-principal.jpg", "Arquitectura principal", "Energía, agua, control y comunicación"],
+  ["/03-kit-energia-solar.jpg", "Energía solar", "Componentes fotovoltaicos y protecciones"],
+  ["/04-kit-hidraulico.jpg", "Sistema hidráulico", "Tanque, bomba, válvulas y distribución"],
+  ["/05-sensores-instrumentacion.jpg", "Instrumentación", "Sensores de campo resistentes y medibles"],
+  ["/06-electronica-control.jpg", "Automatización", "Controlador, módulos, gabinete y mandos"],
+  ["/07-conexion-electrica.jpg", "Conexión eléctrica", "Distribución DC protegida y documentada"],
+  ["/08-conexion-hidraulica.jpg", "Conexión hidráulica", "Tres zonas independientes y seis emisores"],
+  ["/09-estructura-seguridad.jpg", "Montaje y seguridad", "Estructura, herramientas y protección"],
+  ["/10-control-remoto-web.jpg", "Aplicación web", "Supervisión responsiva desde cualquier dispositivo"],
 ] as const;
 
 const installation = [
@@ -190,7 +190,7 @@ export default function Home() {
       </header>
 
       <section className="hero" id="inicio">
-        <img className="hero-photo" src="/01-maqueta-completa.png" alt="Sistema de Riego Inteligente instalado y funcionando" />
+        <img className="hero-photo" src="/01-maqueta-completa.jpg" alt="Sistema de Riego Inteligente instalado y funcionando" fetchPriority="high" decoding="async" />
         <div className="hero-wash" />
         <div className="container hero-layout">
           <div className="hero-copy">
@@ -232,7 +232,7 @@ export default function Home() {
             <div><p>La maqueta de <b>1 metro de ancho por 2 metros de largo</b> integra tres cultivos, energía solar, sensores resistentes, actuación hidráulica y una aplicación web. Su controlador continúa trabajando aunque no exista conexión a internet.</p><a className="text-link" href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>Descargar informe general <Arrow /></a></div>
           </div>
           <div className="project-grid">
-            <article className="project-image-card"><img src="/01-maqueta-completa.png" alt="Vista completa del prototipo" /><div><span>Dimensiones reales</span><strong>2,00 × 1,00 m</strong></div></article>
+            <article className="project-image-card"><img src="/01-maqueta-completa.jpg" alt="Vista completa del prototipo" loading="lazy" decoding="async" /><div><span>Dimensiones reales</span><strong>2,00 × 1,00 m</strong></div></article>
             <div className="project-points">
               <article><span>01</span><h3>Medir</h3><p>Humedad y temperatura por cultivo, nivel de tanque, caudal, presión, energía y ambiente.</p></article>
               <article><span>02</span><h3>Decidir</h3><p>El ESP32 compara umbrales, identifica prioridad y valida condiciones seguras.</p></article>
@@ -252,7 +252,7 @@ export default function Home() {
           </div>
           <div className="component-feature">
             <div><span>{activeCategory === "Todos" ? "Sistema completo" : activeCategory}</span><strong>{filteredComponents.length}</strong><small>componentes y accesorios</small></div>
-            <img src={activeCategory === "Todos" ? "/02-arquitectura-principal.png" : categoryImages[activeCategory]} alt={`Vista de ${activeCategory === "Todos" ? "la arquitectura completa" : activeCategory}`} />
+            <img src={activeCategory === "Todos" ? "/02-arquitectura-principal.jpg" : categoryImages[activeCategory]} alt={`Vista de ${activeCategory === "Todos" ? "la arquitectura completa" : activeCategory}`} loading="lazy" decoding="async" />
           </div>
           <div className="components-grid">
             {filteredComponents.map((component, index) => (
@@ -305,7 +305,7 @@ export default function Home() {
       <section className="section architecture-section" id="arquitectura">
         <div className="container">
           <div className="section-heading split"><div><p className="eyebrow">Arquitectura principal</p><h2>Agua, energía y datos<br /><em>trabajando juntos.</em></h2></div><p>La arquitectura separa físicamente la ruta hidráulica, la potencia de 12 V, la electrónica de 5 V y las comunicaciones. El control local conserva la autonomía cuando la red no está disponible.</p></div>
-          <button className="architecture-image" type="button" onClick={() => setGalleryIndex(1)} aria-label="Ampliar arquitectura principal"><img src="/02-arquitectura-principal.png" alt="Arquitectura principal del Sistema de Riego Inteligente" /><span>Ampliar arquitectura <Arrow /></span></button>
+          <button className="architecture-image" type="button" onClick={() => setGalleryIndex(1)} aria-label="Ampliar arquitectura principal"><img src="/02-arquitectura-principal.jpg" alt="Arquitectura principal del Sistema de Riego Inteligente" loading="lazy" decoding="async" /><span>Ampliar arquitectura <Arrow /></span></button>
           <div className="architecture-cards">
             <article><span>01</span><h3>Energía solar</h3><p>Panel → controlador → batería → distribución DC protegida.</p></article>
             <article><span>02</span><h3>Control local</h3><p>ESP32, ADC, reloj, registro y lógica autónoma no bloqueante.</p></article>
@@ -317,22 +317,22 @@ export default function Home() {
       </section>
 
       <section className="connections-section">
-        <article><img src="/07-conexion-electrica.png" alt="Conexión eléctrica completa" /><div><p className="eyebrow">Conexión eléctrica</p><h2>Potencia protegida.<br />Señales ordenadas.</h2><p>Fusibles, borneras, canaletas y gabinete seco mantienen una instalación inspeccionable.</p><button type="button" onClick={() => setGalleryIndex(6)}>Ver detalle <Arrow /></button></div></article>
-        <article><img src="/08-conexion-hidraulica.png" alt="Conexión hidráulica completa" /><div><p className="eyebrow">Conexión hidráulica</p><h2>Tres zonas.<br />Una red controlada.</h2><p>Filtro, bomba, instrumentos y válvulas convierten cada orden en un volumen verificable.</p><button type="button" onClick={() => setGalleryIndex(7)}>Ver detalle <Arrow /></button></div></article>
+        <article><img src="/07-conexion-electrica.jpg" alt="Conexión eléctrica completa" loading="lazy" decoding="async" /><div><p className="eyebrow">Conexión eléctrica</p><h2>Potencia protegida.<br />Señales ordenadas.</h2><p>Fusibles, borneras, canaletas y gabinete seco mantienen una instalación inspeccionable.</p><button type="button" onClick={() => setGalleryIndex(6)}>Ver detalle <Arrow /></button></div></article>
+        <article><img src="/08-conexion-hidraulica.jpg" alt="Conexión hidráulica completa" loading="lazy" decoding="async" /><div><p className="eyebrow">Conexión hidráulica</p><h2>Tres zonas.<br />Una red controlada.</h2><p>Filtro, bomba, instrumentos y válvulas convierten cada orden en un volumen verificable.</p><button type="button" onClick={() => setGalleryIndex(7)}>Ver detalle <Arrow /></button></div></article>
       </section>
 
       <section className="section installation-section" id="instalacion">
         <div className="container">
           <div className="section-heading split"><div><p className="eyebrow">Puesta en marcha</p><h2>De los materiales a<br /><em>la operación autónoma.</em></h2></div><p>La instalación se realiza por etapas. Cada una termina con una comprobación antes de energizar o incorporar el siguiente subsistema.</p></div>
           <div className="installation-grid">
-            <img src="/09-estructura-seguridad.png" alt="Materiales de estructura, montaje y seguridad" />
+            <img src="/09-estructura-seguridad.jpg" alt="Materiales de estructura, montaje y seguridad" loading="lazy" decoding="async" />
             <div>{installation.map(([number, title, description]) => <details key={number}><summary><span>{number}</span><strong>{title}</strong><i>+</i></summary><p>{description}</p></details>)}</div>
           </div>
         </div>
       </section>
 
       <section className="section remote-section">
-        <div className="container remote-grid"><div><p className="eyebrow">Control remoto</p><h2>La finca disponible<br /><em>en cualquier pantalla.</em></h2><p>La aplicación web responsiva presenta estados, tendencias, alarmas y comandos. El equipo de campo no se expone directamente a internet: intercambia mensajes seguros con el servicio central y conserva su lógica local.</p><ul><li>Panel adaptable a computador, tableta y teléfono.</li><li>Roles de propietario, administrador, operador y observador.</li><li>Historial de órdenes, confirmaciones y eventos de seguridad.</li><li>Operación local aunque la comunicación esté temporalmente caída.</li></ul><a className="button primary" href="#monitoreo">Probar dashboard <Arrow /></a></div><img src="/10-control-remoto-web.png" alt="Aplicación web de control remoto en laptop y teléfono" /></div>
+        <div className="container remote-grid"><div><p className="eyebrow">Control remoto</p><h2>La finca disponible<br /><em>en cualquier pantalla.</em></h2><p>La aplicación web responsiva presenta estados, tendencias, alarmas y comandos. El equipo de campo no se expone directamente a internet: intercambia mensajes seguros con el servicio central y conserva su lógica local.</p><ul><li>Panel adaptable a computador, tableta y teléfono.</li><li>Roles de propietario, administrador, operador y observador.</li><li>Historial de órdenes, confirmaciones y eventos de seguridad.</li><li>Operación local aunque la comunicación esté temporalmente caída.</li></ul><a className="button primary" href="#monitoreo">Probar dashboard <Arrow /></a></div><img src="/10-control-remoto-web.jpg" alt="Aplicación web de control remoto en laptop y teléfono" loading="lazy" decoding="async" /></div>
       </section>
 
       <section className="section scale-section" id="escala">
@@ -345,17 +345,17 @@ export default function Home() {
       <section className="section gallery-section" id="galeria">
         <div className="container">
           <div className="section-heading split light"><div><p className="eyebrow">Galería técnica</p><h2>El proyecto desde<br /><em>cada perspectiva.</em></h2></div><p>Diez visualizaciones coherentes con el inventario, la arquitectura y la instalación propuesta.</p></div>
-          <div className="gallery-grid">{gallery.map(([src, label, title], index) => <button type="button" key={src} className={`gallery-card gallery-${index + 1}`} onClick={() => setGalleryIndex(index)}><img src={src} alt={title} /><span><small>{String(index + 1).padStart(2, "0")} · {label}</small><strong>{title}</strong><i>+</i></span></button>)}</div>
+          <div className="gallery-grid">{gallery.map(([src, label, title], index) => <button type="button" key={src} className={`gallery-card gallery-${index + 1}`} onClick={() => setGalleryIndex(index)}><img src={src} alt={title} loading="lazy" decoding="async" /><span><small>{String(index + 1).padStart(2, "0")} · {label}</small><strong>{title}</strong><i>+</i></span></button>)}</div>
         </div>
       </section>
 
-      <section className="institution-section"><div className="container institution-grid"><img src="/logo-institucion.jpeg" alt="Unidad Educativa Fiscal Samborondón" /><div><p className="eyebrow">Proyecto institucional</p><h2>Unidad Educativa Fiscal Samborondón</h2><p>Formamos estudiantes capaces de convertir ciencia, tecnología y conciencia ambiental en soluciones reales para su comunidad.</p></div><a className="button secondary" href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>Descargar informe <Arrow /></a></div></section>
+      <section className="institution-section"><div className="container institution-grid"><img src="/logo-institucion.jpeg" alt="Unidad Educativa Fiscal Samborondón" loading="lazy" decoding="async" /><div><p className="eyebrow">Proyecto institucional</p><h2>Unidad Educativa Fiscal Samborondón</h2><p>Formamos estudiantes capaces de convertir ciencia, tecnología y conciencia ambiental en soluciones reales para su comunidad.</p></div><a className="button secondary" href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>Descargar informe <Arrow /></a></div></section>
 
       <footer><div className="container"><div><strong>Sistema de Riego Inteligente</strong><span>Unidad Educativa Fiscal Samborondón</span></div><p>Proyecto educativo de agricultura de precisión · Samborondón, Ecuador · 2026</p><a href="#inicio">Volver arriba ↑</a></div></footer>
 
-      {selectedComponent && <div className="modal" role="dialog" aria-modal="true" aria-labelledby="component-title"><button className="modal-backdrop" type="button" aria-label="Cerrar" onClick={() => setSelectedComponent(null)} /><div className="component-modal"><button className="modal-close" type="button" aria-label="Cerrar ficha" onClick={() => setSelectedComponent(null)}>×</button><img src={selectedComponent.image} alt={`Componentes de ${selectedComponent.category}`} /><div><p className="eyebrow">{selectedComponent.category} · {selectedComponent.quantity}</p><h2 id="component-title">{selectedComponent.name}</h2><span className="spec-pill">{selectedComponent.spec}</span><h3>Descripción</h3><p>{selectedComponent.description}</p><h3>Función en el proyecto</h3><p>{selectedComponent.function}</p></div></div></div>}
+      {selectedComponent && <div className="modal" role="dialog" aria-modal="true" aria-labelledby="component-title"><button className="modal-backdrop" type="button" aria-label="Cerrar" onClick={() => setSelectedComponent(null)} /><div className="component-modal"><button className="modal-close" type="button" aria-label="Cerrar ficha" onClick={() => setSelectedComponent(null)}>×</button><img src={selectedComponent.image} alt={`Componentes de ${selectedComponent.category}`} decoding="async" /><div><p className="eyebrow">{selectedComponent.category} · {selectedComponent.quantity}</p><h2 id="component-title">{selectedComponent.name}</h2><span className="spec-pill">{selectedComponent.spec}</span><h3>Descripción</h3><p>{selectedComponent.description}</p><h3>Función en el proyecto</h3><p>{selectedComponent.function}</p></div></div></div>}
 
-      {galleryIndex !== null && <div className="lightbox" role="dialog" aria-modal="true" aria-label="Galería ampliada"><button className="modal-backdrop" type="button" aria-label="Cerrar galería" onClick={() => setGalleryIndex(null)} /><button className="modal-close" type="button" onClick={() => setGalleryIndex(null)} aria-label="Cerrar">×</button><button className="lightbox-nav previous" type="button" aria-label="Imagen anterior" onClick={() => setGalleryIndex((galleryIndex - 1 + gallery.length) % gallery.length)}>‹</button><figure><img src={gallery[galleryIndex][0]} alt={gallery[galleryIndex][2]} /><figcaption><span>{gallery[galleryIndex][1]}</span><strong>{gallery[galleryIndex][2]}</strong><small>{galleryIndex + 1} / {gallery.length}</small></figcaption></figure><button className="lightbox-nav next" type="button" aria-label="Imagen siguiente" onClick={() => setGalleryIndex((galleryIndex + 1) % gallery.length)}>›</button></div>}
+      {galleryIndex !== null && <div className="lightbox" role="dialog" aria-modal="true" aria-label="Galería ampliada"><button className="modal-backdrop" type="button" aria-label="Cerrar galería" onClick={() => setGalleryIndex(null)} /><button className="modal-close" type="button" onClick={() => setGalleryIndex(null)} aria-label="Cerrar">×</button><button className="lightbox-nav previous" type="button" aria-label="Imagen anterior" onClick={() => setGalleryIndex((galleryIndex - 1 + gallery.length) % gallery.length)}>‹</button><figure><img src={gallery[galleryIndex][0]} alt={gallery[galleryIndex][2]} decoding="async" /><figcaption><span>{gallery[galleryIndex][1]}</span><strong>{gallery[galleryIndex][2]}</strong><small>{galleryIndex + 1} / {gallery.length}</small></figcaption></figure><button className="lightbox-nav next" type="button" aria-label="Imagen siguiente" onClick={() => setGalleryIndex((galleryIndex + 1) % gallery.length)}>›</button></div>}
     </main>
   );
 }
