@@ -24,6 +24,9 @@ test("renderiza el panel del Sistema de riego inteligente 1.0 en español", asyn
   assert.match(html, /Sistema de riego inteligente 1\.0/);
   assert.match(html, /Unidad Educativa Fiscal Samborondón/);
   assert.match(html, /Ocho kits que funcionan como un solo equipo/);
+  assert.match(html, /Catálogo fotográfico interactivo/);
+  assert.match(html, /Panel solar de 150 W/);
+  assert.match(html, /Batería AGM 12 V 55 Ah/);
   assert.match(html, /Monitorear sistema/);
   assert.match(html, /Regar 0,40 L/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/);

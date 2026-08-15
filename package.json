@@ -9,6 +9,8 @@
     "content:generate": "node scripts/generate-project-content.mjs",
     "dev": "npm run content:generate && vinext dev",
     "build": "npm run content:generate && vinext build",
+    "build:github": "npm run content:generate && vite build --config vite.static.config.ts --mode github",
+    "build:cloudflare": "npm run content:generate && vite build --config vite.static.config.ts --mode cloudflare",
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",

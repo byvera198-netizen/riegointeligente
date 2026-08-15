@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo, useState } from "react";
 import { projectDocumentation } from "./generated-project-content";
+import { assetPath } from "./asset-path";
 
 type ManualSection = {
   id: string;
@@ -135,7 +136,7 @@ export default function TechnicalManual() {
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ej.: bomba, fusible, sensor, mantenimiento…" type="search" />
         </label>
         <div><strong>{visibleSections.length}</strong><span>secciones encontradas</span></div>
-        <a href="/documentacion-componentes.md" download>Descargar documento</a>
+        <a href={assetPath("documentacion-componentes.md")} download>Descargar documento</a>
       </div>
       <div className="manual-index" aria-label="Índice del manual">
         {sections.slice(1).map((section, index) => <a key={section.id} href={`#manual-section-${section.id}`}><span>{String(index + 1).padStart(2, "0")}</span>{section.title.replace(/^\d+\.\s*/, "")}</a>)}
