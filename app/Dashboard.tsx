@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import TechnicalManual from "./TechnicalManual";
 
 type Zone = {
   id: "A" | "B" | "C";
@@ -18,7 +19,6 @@ type Zone = {
 
 type RemoteState = {
   live?: boolean;
-  updatedAt?: string;
   telemetry?: {
     tankLevel: number;
     batteryVoltage: number;
@@ -29,61 +29,51 @@ type RemoteState = {
     ambientTemp: number;
     ambientHumidity: number;
   };
-  zones?: Array<{
-    zoneId: string;
-    moisturePct: number;
-    soilTemp: number;
-    dailyLiters: number;
-  }>;
+  zones?: Array<{ zoneId: string; moisturePct: number; soilTemp: number; dailyLiters: number }>;
 };
 
+const navItems = [
+  { id: "inicio", label: "Inicio" },
+  { id: "proyecto", label: "El proyecto" },
+  { id: "componentes", label: "Componentes" },
+  { id: "funcionamiento", label: "Funcionamiento" },
+  { id: "dashboard", label: "Dashboard" },
+  { id: "documentacion", label: "Documentación" },
+  { id: "contacto", label: "Contacto" },
+];
+
 const initialZones: Zone[] = [
-  {
-    id: "A",
-    crop: "Tomate",
-    moisture: 38,
-    soilTemp: 24.6,
-    min: 45,
-    max: 68,
-    dailyLiters: 1.4,
-    dailyLimit: 3,
-    state: "Riego activo",
-    tone: "active",
-    history: [55, 53, 50, 48, 45, 43, 41, 39, 38],
-  },
-  {
-    id: "B",
-    crop: "Lechuga",
-    moisture: 57,
-    soilTemp: 22.9,
-    min: 50,
-    max: 72,
-    dailyLiters: 0.8,
-    dailyLimit: 2.4,
-    state: "Humedad óptima",
-    tone: "ok",
-    history: [62, 60, 61, 59, 58, 57, 56, 58, 57],
-  },
-  {
-    id: "C",
-    crop: "Pimiento",
-    moisture: 46,
-    soilTemp: 25.1,
-    min: 44,
-    max: 66,
-    dailyLiters: 1.1,
-    dailyLimit: 2.8,
-    state: "En observación",
-    tone: "watch",
-    history: [54, 52, 51, 49, 48, 47, 48, 47, 46],
-  },
+  { id: "A", crop: "Tomate", moisture: 38, soilTemp: 24.6, min: 45, max: 68, dailyLiters: 1.4, dailyLimit: 3, state: "Riego activo", tone: "active", history: [55, 53, 50, 48, 45, 43, 41, 39, 38] },
+  { id: "B", crop: "Lechuga", moisture: 57, soilTemp: 22.9, min: 50, max: 72, dailyLiters: 0.8, dailyLimit: 2.4, state: "Humedad óptima", tone: "ok", history: [62, 60, 61, 59, 58, 57, 56, 58, 57] },
+  { id: "C", crop: "Pimiento", moisture: 46, soilTemp: 25.1, min: 44, max: 66, dailyLiters: 1.1, dailyLimit: 2.8, state: "En observación", tone: "watch", history: [54, 52, 51, 49, 48, 47, 48, 47, 46] },
+];
+
+const kitCards = [
+  { number: "01", title: "Kit estructural", image: "/galeria-estructura.jpeg", summary: "Cama agrícola de 2 × 1 m, tres divisiones, drenaje y soportes seguros.", items: ["Bastidor y fijaciones", "Membrana y geotextil", "Sustrato y drenaje"], target: "manual-section-2-kit-estructural-y-cama-agricola" },
+  { number: "02", title: "Kit hidráulico", image: "/galeria-bomba.jpeg", summary: "Almacena, filtra, impulsa, distribuye y mide el agua de cada riego.", items: ["Tanque de 40–60 L", "Bomba 12 V y filtro", "3 válvulas y 6 emisores"], target: "manual-section-3-kit-hidraulico-completo" },
+  { number: "03", title: "Kit de sensores", image: "/galeria-zona-c.jpeg", summary: "Entrega al controlador las condiciones reales del suelo, ambiente y circuito.", items: ["Humedad y temperatura", "Nivel, caudal y presión", "BME280 e INA260"], target: "manual-section-4-kit-de-sensores" },
+  { number: "04", title: "Control electrónico", image: "/galeria-control-esp32.jpeg", summary: "El ESP32 ejecuta las reglas autónomas y comunica el prototipo con la web.", items: ["ESP32 y ADS1115", "Reloj DS3231", "Memoria y señalización"], target: "manual-section-5-kit-de-control-electronico" },
+  { number: "05", title: "Potencia y protección", image: "/galeria-caja-ip65.jpeg", summary: "Acciona bomba y válvulas sin exponer al controlador a cargas de 12 V.", items: ["MOSFET y contactor", "Fusibles y diodos", "Parada de emergencia"], target: "manual-section-6-kit-de-actuacion-y-potencia-electrica" },
+  { number: "06", title: "Energía solar", image: "/galeria-panel-solar.jpeg", summary: "Mantiene la operación autónoma con producción, almacenamiento y protecciones DC.", items: ["Panel solar de 150 W", "Controlador de carga", "Batería AGM 12 V 55 Ah"], target: "manual-section-7-kit-de-energia-solar" },
+  { number: "07", title: "Comunicaciones y software", image: "/galeria-calibracion.jpeg", summary: "Conecta la telemetría, las órdenes remotas, la base de datos y el panel web.", items: ["Wi‑Fi y HTTPS", "API y base de datos", "Aplicativo web"], target: "manual-section-10-kit-de-comunicaciones-y-software" },
+  { number: "08", title: "Montaje y herramientas", image: "/cabecera-riego-inteligente.png", summary: "Reúne cableado, terminales, sellado, herramientas y consumibles de instalación.", items: ["Caja IP65 y borneras", "Cableado identificado", "Herramientas de prueba"], target: "manual-section-11-herramientas-y-consumibles-de-montaje" },
+];
+
+const gallery = [
+  { src: "/galeria-estructura.jpeg", title: "Construcción de la cama", caption: "Referencia visual del bastidor, divisores y drenaje previo al sustrato." },
+  { src: "/galeria-bomba.jpeg", title: "Banco hidráulico", caption: "Bomba de diafragma, manómetro, tuberías y base antivibración." },
+  { src: "/galeria-control-esp32.jpeg", title: "Control ESP32", caption: "Referencia de montaje ordenado dentro de una envolvente protegida." },
+  { src: "/galeria-caja-ip65.jpeg", title: "Caja IP65", caption: "Protección de conexiones y circuitos frente a polvo y salpicaduras." },
+  { src: "/galeria-panel-solar.jpeg", title: "Generación solar", caption: "Panel con estructura estable, cableado protegido y controlador de carga." },
+  { src: "/galeria-calibracion.jpeg", title: "Calibración y pruebas", caption: "Medición de sensores, aforo y comprobación del comportamiento hidráulico." },
+  { src: "/galeria-zona-c.jpeg", title: "Riego de la Zona C", caption: "Microaspersión controlada para el cultivo demostrativo de pimiento." },
 ];
 
 const events = [
-  { time: "11:24", title: "Riego iniciado · Zona A", detail: "Déficit de humedad de 7 puntos", type: "water" },
-  { time: "11:23", title: "Validación hidráulica correcta", detail: "1,0 bar · caudal confirmado", type: "check" },
-  { time: "10:45", title: "Lecturas sincronizadas", detail: "9 sensores dentro de rango", type: "sync" },
-  { time: "08:10", title: "Riego completado · Zona C", detail: "0,42 L aplicados en 46 segundos", type: "done" },
+  { time: "11:24", title: "Riego iniciado · Zona A", detail: "Déficit de humedad de 7 puntos" },
+  { time: "11:23", title: "Validación hidráulica correcta", detail: "1,0 bar · caudal confirmado" },
+  { time: "10:45", title: "Lecturas sincronizadas", detail: "Sensores dentro de rango" },
+  { time: "08:10", title: "Riego completado · Zona C", detail: "0,42 L aplicados en 46 segundos" },
 ];
 
 function clamp(value: number, min: number, max: number) {
@@ -93,47 +83,33 @@ function clamp(value: number, min: number, max: number) {
 function MiniBars({ values }: { values: number[] }) {
   const min = Math.min(...values) - 4;
   const max = Math.max(...values) + 4;
-  return (
-    <div className="mini-bars" aria-label={`Histórico de humedad: ${values.join(", ")} por ciento`}>
-      {values.map((value, index) => (
-        <span
-          key={`${value}-${index}`}
-          style={{ height: `${clamp(((value - min) / (max - min)) * 100, 12, 100)}%` }}
-        />
-      ))}
-    </div>
-  );
+  return <div className="mini-bars" aria-label={`Histórico: ${values.join(", ")} por ciento`}>{values.map((value, index) => <span key={`${value}-${index}`} style={{ height: `${clamp(((value - min) / (max - min)) * 100, 12, 100)}%` }} />)}</div>;
 }
 
-function Donut({ value, label, unit = "%" }: { value: number; label: string; unit?: string }) {
-  return (
-    <div className="donut-wrap">
-      <div className="donut" style={{ "--value": `${value * 3.6}deg` } as React.CSSProperties}>
-        <div><strong>{value}</strong><small>{unit}</small></div>
-      </div>
-      <span>{label}</span>
-    </div>
-  );
+function Donut({ value, label }: { value: number; label: string }) {
+  return <div className="donut-wrap"><div className="donut" style={{ "--value": `${value * 3.6}deg` } as React.CSSProperties}><div><strong>{value}</strong><small>%</small></div></div><span>{label}</span></div>;
 }
 
-export default function Home() {
+export default function IrrigationSite() {
   const [zones, setZones] = useState(initialZones);
-  const [activeView, setActiveView] = useState("Resumen");
+  const [activeSection, setActiveSection] = useState("inicio");
+  const [mobileMenu, setMobileMenu] = useState(false);
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
+  const [selectedImage, setSelectedImage] = useState<(typeof gallery)[number] | null>(null);
   const [toast, setToast] = useState("");
-  const [lastSync, setLastSync] = useState("hace 8 s");
   const [isLive, setIsLive] = useState(false);
   const [systemPaused, setSystemPaused] = useState(false);
-  const [telemetry, setTelemetry] = useState({
-    tankLevel: 78,
-    batteryVoltage: 13.1,
-    batteryPct: 84,
-    solarWatts: 128,
-    pressureBar: 1.0,
-    flowLpm: 1.8,
-    ambientTemp: 29.4,
-    ambientHumidity: 71,
-  });
+  const [lastSync, setLastSync] = useState("hace 8 s");
+  const [telemetry, setTelemetry] = useState({ tankLevel: 78, batteryVoltage: 13.1, batteryPct: 84, solarWatts: 128, pressureBar: 1, flowLpm: 1.8, ambientTemp: 29.4, ambientHumidity: 71 });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible?.target.id) setActiveSection(visible.target.id);
+    }, { rootMargin: "-25% 0px -62%", threshold: [0.05, 0.2, 0.5] });
+    navItems.forEach(({ id }) => { const element = document.getElementById(id); if (element) observer.observe(element); });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -146,27 +122,15 @@ export default function Home() {
         setTelemetry(data.telemetry);
         setIsLive(true);
         setLastSync("ahora");
-        if (data.zones?.length) {
-          setZones((current) => current.map((zone) => {
-            const incoming = data.zones?.find((item) => item.zoneId === zone.id);
-            return incoming ? {
-              ...zone,
-              moisture: incoming.moisturePct,
-              soilTemp: incoming.soilTemp,
-              dailyLiters: incoming.dailyLiters,
-            } : zone;
-          }));
-        }
-      } catch {
-        setIsLive(false);
-      }
+        if (data.zones?.length) setZones((current) => current.map((zone) => {
+          const incoming = data.zones?.find((item) => item.zoneId === zone.id);
+          return incoming ? { ...zone, moisture: incoming.moisturePct, soilTemp: incoming.soilTemp, dailyLiters: incoming.dailyLiters } : zone;
+        }));
+      } catch { setIsLive(false); }
     }
     void refresh();
     const timer = window.setInterval(refresh, 15000);
-    return () => {
-      cancelled = true;
-      window.clearInterval(timer);
-    };
+    return () => { cancelled = true; window.clearInterval(timer); };
   }, []);
 
   useEffect(() => {
@@ -178,39 +142,20 @@ export default function Home() {
   const activeZone = zones.find((zone) => zone.tone === "active");
   const waterToday = useMemo(() => zones.reduce((sum, zone) => sum + zone.dailyLiters, 0), [zones]);
 
-  async function confirmWatering(zone: Zone) {
-    if (systemPaused) {
-      setToast("El sistema está pausado. Reactiva el modo autónomo antes de regar.");
-      setSelectedZone(null);
-      return;
-    }
-    if (telemetry.tankLevel < 15 || telemetry.batteryPct < 20) {
-      setToast("Orden bloqueada por una protección local.");
-      setSelectedZone(null);
-      return;
-    }
+  function closeMenu() { setMobileMenu(false); }
 
+  async function confirmWatering(zone: Zone) {
+    if (systemPaused) { setToast("El sistema está pausado. Reactiva el modo autónomo antes de regar."); setSelectedZone(null); return; }
+    if (telemetry.tankLevel < 15 || telemetry.batteryPct < 20) { setToast("Orden bloqueada por una protección local."); setSelectedZone(null); return; }
     if (isLive) {
       try {
-        const response = await fetch("/api/control", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ zoneId: zone.id, action: "water", volumeMl: 400 }),
-        });
+        const response = await fetch("/api/control", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ zoneId: zone.id, action: "water", volumeMl: 400 }) });
         const result = (await response.json()) as { error?: string };
         if (!response.ok) throw new Error(result.error ?? "No se pudo enviar la orden");
-        setToast(`Orden segura enviada a la Zona ${zone.id}. El controlador confirmará su ejecución.`);
-      } catch (error) {
-        setToast(error instanceof Error ? error.message : "No se pudo enviar la orden");
-      }
+        setToast(`Orden segura enviada a la Zona ${zone.id}.`);
+      } catch (error) { setToast(error instanceof Error ? error.message : "No se pudo enviar la orden"); }
     } else {
-      setZones((current) => current.map((item) => item.id === zone.id ? {
-        ...item,
-        dailyLiters: Number((item.dailyLiters + 0.4).toFixed(2)),
-        moisture: clamp(item.moisture + 5, 0, 100),
-        state: "Riego activo",
-        tone: "active",
-      } : { ...item, tone: item.moisture >= item.min ? "ok" : "watch", state: item.moisture >= item.min ? "Humedad óptima" : "En observación" }));
+      setZones((current) => current.map((item) => item.id === zone.id ? { ...item, dailyLiters: Number((item.dailyLiters + 0.4).toFixed(2)), moisture: clamp(item.moisture + 5, 0, 100), state: "Riego activo", tone: "active" } : { ...item, tone: item.moisture >= item.min ? "ok" : "watch", state: item.moisture >= item.min ? "Humedad óptima" : "En observación" }));
       setToast(`Demostración: pulso de 0,40 L aplicado a la Zona ${zone.id}.`);
     }
     setSelectedZone(null);
@@ -218,146 +163,150 @@ export default function Home() {
 
   function pauseSystem() {
     setSystemPaused((value) => !value);
-    setToast(systemPaused ? "Modo autónomo reactivado." : "Sistema pausado: bomba y válvulas quedan desactivadas.");
+    setToast(systemPaused ? "Modo autónomo reactivado." : "Sistema pausado: bomba y válvulas desactivadas.");
   }
 
   return (
     <main>
-      <header className="topbar">
-        <a className="brand" href="#inicio" aria-label="Ir al inicio">
-          <img className="institution-logo" src="/logo-uef-samborondon.jpeg" alt="Logotipo de la Unidad Educativa Fiscal Samborondón" />
+      <header className="site-header">
+        <a className="brand" href="#inicio" onClick={closeMenu} aria-label="Ir al inicio">
+          <img src="/logo-uef-samborondon.jpeg" alt="Logotipo de la Unidad Educativa Fiscal Samborondón" />
           <span><strong>Riego inteligente 1.0</strong><small>UEF Samborondón</small></span>
         </a>
-        <nav aria-label="Navegación principal">
-          {["Resumen", "Zonas", "Historial", "Configuración"].map((item) => (
-            <button key={item} className={activeView === item ? "active" : ""} onClick={() => setActiveView(item)}>{item}</button>
-          ))}
+        <button className="menu-toggle" onClick={() => setMobileMenu((value) => !value)} aria-expanded={mobileMenu} aria-label="Abrir menú"><i /><i /><i /></button>
+        <nav className={mobileMenu ? "open" : ""} aria-label="Navegación principal">
+          {navItems.map((item) => <a key={item.id} href={`#${item.id}`} className={activeSection === item.id ? "active" : ""} onClick={closeMenu}>{item.label}</a>)}
         </nav>
-        <div className="system-state">
-          <span className={systemPaused ? "status-dot paused" : "status-dot"} />
-          <span><strong>{systemPaused ? "Sistema pausado" : "Sistema autónomo"}</strong><small>{isLive ? `En línea · ${lastSync}` : "Demostración operativa"}</small></span>
-        </div>
+        <a className="monitor-button" href="#dashboard" onClick={closeMenu}><span>◉</span> Monitorear sistema</a>
       </header>
 
       <section className="hero" id="inicio">
+        <div className="hero-shade" />
+        <div className="hero-kpis" aria-label="Características principales">
+          <div><span>♧</span><p><strong>3 zonas</strong><small>Tomate, lechuga y pimiento</small></p></div>
+          <div><span>◉</span><p><strong>6 emisores</strong><small>Microaspersores regulables</small></p></div>
+          <div><span>☀</span><p><strong>Energía solar</strong><small>150 W · batería 55 Ah</small></p></div>
+          <div><span>⌁</span><p><strong>IoT seguro</strong><small>Monitoreo en tiempo real</small></p></div>
+        </div>
         <div className="hero-copy">
-          <span className="eyebrow">Sistema de riego inteligente 1.0 / {activeView}</span>
-          <h1>El agua correcta.<br /><em>Justo cuando hace falta.</em></h1>
-          <p>Control autónomo de tres zonas agrícolas con supervisión remota, límites de seguridad y registro de cada decisión.</p>
-        </div>
-        <div className="hero-side">
-          <figure className="hero-photo">
-            <img src="/cabecera-riego-inteligente.png" alt="Prototipo agrícola con riego por zonas, tanque, control hidráulico y panel solar" />
-            <figcaption><span className="status-dot" /><span><strong>Prototipo autónomo</strong><small>3 zonas · energía solar · control remoto</small></span></figcaption>
-          </figure>
+          <span className="hero-tag">Tecnología · sostenibilidad · innovación</span>
+          <h1>Sistema de<br /><em>riego inteligente 1.0</em></h1>
+          <h2>Unidad Educativa Fiscal Samborondón</h2>
+          <p>Un prototipo educativo autónomo que mide el suelo, decide cuándo regar, protege el circuito hidráulico y permite supervisar cada zona desde una aplicación web.</p>
+          <div className="hero-features">
+            <span><b>♧</b>Agricultura sostenible</span><span><b>⌁</b>Monitoreo inteligente</span><span><b>◉</b>Riego automático</span><span><b>☀</b>Energía solar</span><span><b>✓</b>Seguridad física</span>
+          </div>
           <div className="hero-actions">
-            <button className={systemPaused ? "primary resume" : "danger-outline"} onClick={pauseSystem}>
-              <span>{systemPaused ? "▶" : "■"}</span> {systemPaused ? "Reactivar sistema" : "Pausar sistema"}
-            </button>
-            <span className="weather"><strong>{telemetry.ambientTemp.toFixed(1)} °C</strong><small>Samborondón · {telemetry.ambientHumidity}% HR</small></span>
+            <a className="button primary" href="#proyecto"><span>▶</span> Conoce el proyecto</a>
+            <a className="button secondary" href="#dashboard"><span>▥</span> Ver dashboard</a>
+          </div>
+        </div>
+        <div className="hardware-strip">
+          <div><small>Controlador</small><strong>ESP32</strong></div><div><small>Sensores</small><strong>9 principales</strong></div><div><small>Válvulas</small><strong>3 electroválvulas</strong></div><div><small>Bomba</small><strong>12 V DC</strong></div><div><small>Conectividad</small><strong>Wi‑Fi / HTTPS</strong></div>
+        </div>
+      </section>
+
+      <section className="section project-section" id="proyecto">
+        <div className="section-heading split-heading">
+          <div><span className="eyebrow">El proyecto</span><h2>Una solución educativa que trabaja de forma autónoma.</h2></div>
+          <p>El aplicativo web supervisa y solicita acciones. El ESP32 conserva la autoridad final: solo riega cuando tanque, batería, presión, caudal, humedad y límites diarios se encuentran dentro de condiciones seguras.</p>
+        </div>
+        <div className="project-layout">
+          <article className="project-story">
+            <span className="big-number">1.0</span>
+            <h3>Objetivo general</h3>
+            <p>Diseñar e implementar un sistema demostrativo de riego inteligente que optimice el uso del agua, funcione aun cuando no exista internet y registre de manera comprensible cada lectura, decisión y alarma.</p>
+            <a href="#componentes">Explorar los 8 kits <span>→</span></a>
+          </article>
+          <div className="architecture-flow">
+            <div><span>01</span><strong>Medir</strong><p>Humedad, temperatura, nivel, presión, caudal, batería y producción solar.</p></div>
+            <div><span>02</span><strong>Decidir</strong><p>Comparar umbrales, horarios, límites diarios y condiciones de protección.</p></div>
+            <div><span>03</span><strong>Actuar</strong><p>Abrir una única zona, activar la bomba y entregar un volumen medido.</p></div>
+            <div><span>04</span><strong>Registrar</strong><p>Guardar telemetría, órdenes, resultados, fallos y mantenimiento.</p></div>
+          </div>
+        </div>
+        <div className="zone-summary">
+          <div><span>A</span><p><strong>Tomate</strong><small>Humedad objetivo 45–68 %</small></p></div>
+          <div><span>B</span><p><strong>Lechuga</strong><small>Humedad objetivo 50–72 %</small></p></div>
+          <div><span>C</span><p><strong>Pimiento</strong><small>Humedad objetivo 44–66 %</small></p></div>
+          <div className="bed-size"><small>Cama demostrativa</small><strong>2,00 × 1,00 m</strong></div>
+        </div>
+      </section>
+
+      <section className="section components-section" id="componentes">
+        <div className="section-heading centered"><span className="eyebrow">Componentes del sistema</span><h2>Ocho kits que funcionan como un solo equipo.</h2><p>Cada tarjeta abre directamente la explicación completa: cantidades, especificaciones, conexión, función y respuesta ante fallos.</p></div>
+        <div className="kit-grid">
+          {kitCards.map((kit) => <article className="kit-card" key={kit.number}>
+            <div className="kit-image"><img src={kit.image} alt={`Visualización del ${kit.title}`} /><span>{kit.number}</span></div>
+            <div className="kit-body"><h3>{kit.title}</h3><p>{kit.summary}</p><ul>{kit.items.map((item) => <li key={item}>{item}</li>)}</ul><a href={`#${kit.target}`}>Ver kit completo <span>→</span></a></div>
+          </article>)}
+        </div>
+      </section>
+
+      <section className="function-section" id="funcionamiento">
+        <div className="section function-inner">
+          <div className="section-heading light-heading"><span className="eyebrow">Funcionamiento autónomo</span><h2>El riego se ejecuta como una secuencia segura y verificable.</h2></div>
+          <div className="operation-flow">
+            <div><span>1</span><h3>Detecta necesidad</h3><p>La humedad cae por debajo del umbral y se confirma la validez del sensor.</p></div>
+            <div><span>2</span><h3>Valida protecciones</h3><p>Comprueba tanque, batería, emergencia, horario y límite de agua diario.</p></div>
+            <div><span>3</span><h3>Riega por volumen</h3><p>Abre la válvula, enciende la bomba y cuenta pulsos del caudalímetro.</p></div>
+            <div><span>4</span><h3>Confirma y registra</h3><p>Detiene la bomba, cierra la válvula y publica el resultado en la web.</p></div>
+          </div>
+          <div className="safety-banner"><span>!</span><div><strong>La protección física siempre tiene prioridad.</strong><p>Una orden remota nunca puede anular emergencia, tanque vacío, batería baja, sobrepresión, falta de caudal ni tiempo máximo de bomba.</p></div></div>
+          <div className="phase-layout">
+            <img src="/galeria-calibracion.jpeg" alt="Proceso de calibración y comprobación de sensores" />
+            <div><span className="eyebrow">Fases de construcción</span>{["Estructura y drenaje", "Circuito hidráulico", "Energía solar", "Sensores y electrónica", "Firmware y aplicativo", "Integración y 21 pruebas"].map((phase, index) => <p key={phase}><span>{String(index + 1).padStart(2, "0")}</span><strong>{phase}</strong></p>)}</div>
           </div>
         </div>
       </section>
 
-      <section className="status-strip" aria-label="Estado del sistema">
-        <div className="status-lead">
-          <span className="pulse-icon">≋</span>
-          <div><small>ESTADO ACTUAL</small><strong>{systemPaused ? "Riego suspendido" : activeZone ? `Regando Zona ${activeZone.id}` : "En monitoreo"}</strong></div>
+      <section className="section dashboard-section" id="dashboard">
+        <div className="section-heading dashboard-heading"><div><span className="eyebrow">Aplicativo web operativo</span><h2>Monitoreo y control por cultivo.</h2></div><div className="live-state"><i className={systemPaused ? "paused" : ""} /><p><strong>{systemPaused ? "Sistema pausado" : "Sistema autónomo"}</strong><small>{isLive ? `En línea · ${lastSync}` : "Demostración interactiva"}</small></p><button onClick={pauseSystem}>{systemPaused ? "Reactivar" : "Pausar"}</button></div></div>
+        <div className="status-strip">
+          <div className="status-lead"><span>≋</span><p><small>Estado actual</small><strong>{systemPaused ? "Riego suspendido" : activeZone ? `Regando Zona ${activeZone.id}` : "En monitoreo"}</strong></p></div>
+          <div><small>Caudal</small><strong>{systemPaused ? "0,0" : telemetry.flowLpm.toFixed(1).replace(".", ",")} <b>L/min</b></strong></div>
+          <div><small>Presión</small><strong>{telemetry.pressureBar.toFixed(1).replace(".", ",")} <b>bar</b></strong></div>
+          <div><small>Aplicado hoy</small><strong>{waterToday.toFixed(1).replace(".", ",")} <b>L</b></strong></div>
+          <div><small>Ambiente</small><strong>{telemetry.ambientTemp.toFixed(1).replace(".", ",")} <b>°C</b></strong></div>
         </div>
-        <div><small>CAUDAL</small><strong>{systemPaused ? "0,0" : telemetry.flowLpm.toFixed(1).replace(".", ",")} <b>L/min</b></strong></div>
-        <div><small>PRESIÓN</small><strong>{telemetry.pressureBar.toFixed(1).replace(".", ",")} <b>bar</b></strong></div>
-        <div><small>APLICADO HOY</small><strong>{waterToday.toFixed(1).replace(".", ",")} <b>L</b></strong></div>
-        <div className="progress-cell"><small>{activeZone ? `OBJETIVO ZONA ${activeZone.id}` : "CICLO"}</small><strong>0,40 <b>L</b></strong><span><i style={{ width: "64%" }} /></span></div>
-      </section>
-
-      <section className="content-grid">
-        <div className="zones-panel">
-          <div className="section-title">
-            <div><span className="eyebrow">CONTROL POR CULTIVO</span><h2>Tres zonas, tres necesidades</h2></div>
-            <div className="legend"><span><i className="green" /> Óptima</span><span><i className="amber" /> Observar</span><span><i className="blue" /> Regando</span></div>
-          </div>
-          <div className="zone-grid">
-            {zones.map((zone) => (
-              <article className={`zone-card ${zone.tone}`} key={zone.id}>
-                <div className="zone-head">
-                  <span className="zone-letter">{zone.id}</span>
-                  <div><small>ZONA {zone.id}</small><h3>{zone.crop}</h3></div>
-                  <span className={`pill ${zone.tone}`}>{zone.state}</span>
-                </div>
-                <div className="moisture-row">
-                  <div><small>HUMEDAD DEL SUELO</small><strong>{zone.moisture}<sup>%</sup></strong><span>Objetivo {zone.min}–{zone.max}%</span></div>
-                  <MiniBars values={zone.history} />
-                </div>
-                <div className="zone-details">
-                  <div><small>TEMP. SUELO</small><strong>{zone.soilTemp.toFixed(1).replace(".", ",")} °C</strong></div>
-                  <div><small>AGUA HOY</small><strong>{zone.dailyLiters.toFixed(1).replace(".", ",")} / {zone.dailyLimit.toFixed(1).replace(".", ",")} L</strong></div>
-                </div>
-                <button className="water-button" onClick={() => setSelectedZone(zone)} disabled={systemPaused}>
-                  <span>⌁</span> Regar 0,40 L
-                </button>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <aside className="decision-card">
-          <span className="eyebrow light">DECISIÓN AUTÓNOMA</span>
-          <h2>El sistema explica<br />por qué actúa.</h2>
-          <div className="decision-score"><strong>{activeZone ? "7" : "0"}</strong><span><b>puntos</b><small>de déficit detectado</small></span></div>
-          <ul>
-            <li><i>✓</i><span><b>Suelo bajo el umbral</b><small>Zona A: 38% · mínimo 45%</small></span></li>
-            <li><i>✓</i><span><b>Tanque suficiente</b><small>{telemetry.tankLevel}% disponible</small></span></li>
-            <li><i>✓</i><span><b>Presión y energía estables</b><small>{telemetry.pressureBar.toFixed(1)} bar · batería {telemetry.batteryPct}%</small></span></li>
-            <li><i>✓</i><span><b>Dentro del límite diario</b><small>1,4 de 3,0 litros utilizados</small></span></li>
-          </ul>
-          <p className="decision-note"><span>i</span> Las protecciones físicas siempre tienen prioridad sobre una orden remota.</p>
-        </aside>
-      </section>
-
-      <section className="lower-grid">
-        <article className="resource-card">
-          <div className="section-title compact"><div><span className="eyebrow">RECURSOS</span><h2>Agua y energía</h2></div><span className="healthy">Todo saludable</span></div>
-          <div className="resource-content">
-            <Donut value={telemetry.tankLevel} label="Tanque" />
-            <Donut value={telemetry.batteryPct} label="Batería" />
-            <div className="energy-facts">
-              <div><small>PRODUCCIÓN SOLAR</small><strong>{telemetry.solarWatts} W</strong><span>cargando</span></div>
-              <div><small>TENSIÓN</small><strong>{telemetry.batteryVoltage.toFixed(1).replace(".", ",")} V</strong><span>normal</span></div>
-              <div><small>AUTONOMÍA EST.</small><strong>31 h</strong><span>con reserva</span></div>
+        <div className="dashboard-grid">
+          <div className="zones-panel">
+            <div className="subheading"><div><span className="eyebrow">Tres zonas</span><h3>Condiciones del suelo</h3></div><p><i className="green" /> Óptima <i className="amber" /> Observar <i className="blue" /> Regando</p></div>
+            <div className="zone-grid">
+              {zones.map((zone) => <article className={`zone-card ${zone.tone}`} key={zone.id}>
+                <div className="zone-head"><span>{zone.id}</span><p><small>Zona {zone.id}</small><strong>{zone.crop}</strong></p><i>{zone.state}</i></div>
+                <div className="moisture-row"><div><small>Humedad del suelo</small><strong>{zone.moisture}<sup>%</sup></strong><span>Objetivo {zone.min}–{zone.max}%</span></div><MiniBars values={zone.history} /></div>
+                <div className="zone-details"><p><small>Temp. suelo</small><strong>{zone.soilTemp.toFixed(1).replace(".", ",")} °C</strong></p><p><small>Agua hoy</small><strong>{zone.dailyLiters.toFixed(1).replace(".", ",")} / {zone.dailyLimit.toFixed(1).replace(".", ",")} L</strong></p></div>
+                <button onClick={() => setSelectedZone(zone)} disabled={systemPaused}>⌁ Regar 0,40 L</button>
+              </article>)}
             </div>
           </div>
-        </article>
-
-        <article className="activity-card">
-          <div className="section-title compact"><div><span className="eyebrow">BITÁCORA</span><h2>Actividad reciente</h2></div><button onClick={() => setActiveView("Historial")}>Ver todo →</button></div>
-          <div className="event-list">
-            {events.map((event) => (
-              <div className="event" key={`${event.time}-${event.title}`}>
-                <time>{event.time}</time><i className={event.type} /><span><strong>{event.title}</strong><small>{event.detail}</small></span>
-              </div>
-            ))}
-          </div>
-        </article>
+          <aside className="decision-card"><span className="eyebrow">Decisión autónoma</span><h3>El sistema explica por qué actúa.</h3><div className="decision-score"><strong>{activeZone ? "7" : "0"}</strong><p><b>puntos</b><small>de déficit detectado</small></p></div><ul><li><i>✓</i><p><strong>Suelo bajo el umbral</strong><small>Zona A: 38 % · mínimo 45 %</small></p></li><li><i>✓</i><p><strong>Tanque suficiente</strong><small>{telemetry.tankLevel} % disponible</small></p></li><li><i>✓</i><p><strong>Presión y energía estables</strong><small>{telemetry.pressureBar.toFixed(1)} bar · batería {telemetry.batteryPct} %</small></p></li><li><i>✓</i><p><strong>Dentro del límite diario</strong><small>1,4 de 3,0 litros utilizados</small></p></li></ul></aside>
+        </div>
+        <div className="dashboard-lower">
+          <article className="resource-card"><div className="subheading"><div><span className="eyebrow">Recursos</span><h3>Agua y energía</h3></div><em>Todo saludable</em></div><div className="resource-content"><Donut value={telemetry.tankLevel} label="Tanque" /><Donut value={telemetry.batteryPct} label="Batería" /><div className="energy-facts"><p><small>Producción solar</small><strong>{telemetry.solarWatts} W</strong><span>cargando</span></p><p><small>Tensión</small><strong>{telemetry.batteryVoltage.toFixed(1).replace(".", ",")} V</strong><span>normal</span></p><p><small>Autonomía est.</small><strong>31 h</strong><span>con reserva</span></p></div></div></article>
+          <article className="activity-card"><div className="subheading"><div><span className="eyebrow">Bitácora</span><h3>Actividad reciente</h3></div><a href="#documentacion">Ver protocolo →</a></div><div className="event-list">{events.map((event) => <div className="event" key={event.time + event.title}><time>{event.time}</time><i /><p><strong>{event.title}</strong><small>{event.detail}</small></p></div>)}</div></article>
+        </div>
       </section>
 
-      <footer>
-        <div><img className="footer-logo" src="/logo-uef-samborondon.jpeg" alt="" /><strong>1.0</strong><span>Sistema de riego inteligente · Unidad Educativa Fiscal Samborondón</span></div>
-        <p>Control local autónomo + supervisión web segura</p>
-      </footer>
+      <section className="gallery-section" aria-labelledby="gallery-title">
+        <div className="section"><div className="section-heading centered"><span className="eyebrow">Galería validada</span><h2 id="gallery-title">Referencias visuales del prototipo.</h2><p>Se seleccionaron imágenes coherentes con el diseño. Abre cada una para revisarla en detalle.</p></div><div className="gallery-grid">{gallery.map((item, index) => <button key={item.src} className={index === 0 ? "wide" : ""} onClick={() => setSelectedImage(item)}><img src={item.src} alt={item.title} /><span><strong>{item.title}</strong><small>{item.caption}</small></span></button>)}</div><p className="gallery-disclaimer">Estas imágenes son visualizaciones técnicas de referencia. La aceptación del sistema se realiza con fotografías, mediciones y pruebas del montaje físico definitivo.</p></div>
+      </section>
 
-      {selectedZone && (
-        <div className="modal-backdrop" role="presentation" onMouseDown={() => setSelectedZone(null)}>
-          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onMouseDown={(event) => event.stopPropagation()}>
-            <span className="modal-icon">⌁</span>
-            <span className="eyebrow">ORDEN REMOTA PROTEGIDA</span>
-            <h2 id="modal-title">Regar Zona {selectedZone.id}</h2>
-            <p>Se solicitará un pulso de <strong>0,40 litros</strong> para {selectedZone.crop}. El controlador volverá a validar tanque, batería, caudal, presión y límite diario antes de activar la bomba.</p>
-            <div className="safety-checks"><span>✓ Tanque {telemetry.tankLevel}%</span><span>✓ Batería {telemetry.batteryPct}%</span><span>✓ Límite disponible</span></div>
-            <div className="modal-actions"><button onClick={() => setSelectedZone(null)}>Cancelar</button><button className="primary" onClick={() => void confirmWatering(selectedZone)}>Confirmar riego</button></div>
-          </div>
-        </div>
-      )}
+      <section className="section documentation-section" id="documentacion">
+        <div className="section-heading split-heading"><div><span className="eyebrow">Documentación completa</span><h2>Todos los componentes, hasta el elemento más pequeño.</h2></div><p>El manual integra estructura, hidráulica, sensores, potencia, energía solar, conexiones, software, herramientas, fases, fallos, repuestos, mantenimiento y criterios de operación.</p></div>
+        <div className="document-stats"><div><strong>8</strong><span>kits integrados</span></div><div><strong>144</strong><span>apartados técnicos</span></div><div><strong>21</strong><span>pruebas de aceptación</span></div><div><strong>7 días</strong><span>de ensayo prolongado</span></div></div>
+        <TechnicalManual />
+      </section>
 
+      <section className="contact-section" id="contacto">
+        <div className="section contact-inner"><img src="/logo-uef-samborondon.jpeg" alt="Unidad Educativa Fiscal Samborondón" /><div><span className="eyebrow">Proyecto institucional</span><h2>Sistema de riego inteligente 1.0</h2><p>Unidad Educativa Fiscal Samborondón · Samborondón, Ecuador</p></div><div className="contact-actions"><a className="button primary" href="#dashboard">Monitorear sistema</a><a className="button secondary" href="#inicio">Volver al inicio</a></div></div>
+      </section>
+
+      <footer><div><img src="/logo-uef-samborondon.jpeg" alt="" /><p><strong>Sistema de riego inteligente 1.0</strong><small>Unidad Educativa Fiscal Samborondón</small></p></div><p>Control local autónomo · supervisión web segura · energía solar</p><a href="#inicio">↑ Inicio</a></footer>
+
+      {selectedZone && <div className="modal-backdrop" onMouseDown={() => setSelectedZone(null)}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="watering-title" onMouseDown={(event) => event.stopPropagation()}><span className="modal-icon">⌁</span><span className="eyebrow">Orden remota protegida</span><h2 id="watering-title">Regar Zona {selectedZone.id}</h2><p>Se solicitará un pulso de <strong>0,40 litros</strong> para {selectedZone.crop}. El ESP32 validará tanque, batería, caudal, presión, emergencia y límite diario antes de activar la bomba.</p><div className="safety-checks"><span>✓ Tanque {telemetry.tankLevel} %</span><span>✓ Batería {telemetry.batteryPct} %</span><span>✓ Límite disponible</span></div><div className="modal-actions"><button onClick={() => setSelectedZone(null)}>Cancelar</button><button className="primary" onClick={() => void confirmWatering(selectedZone)}>Confirmar riego</button></div></div></div>}
+      {selectedImage && <div className="modal-backdrop image-backdrop" onMouseDown={() => setSelectedImage(null)}><figure className="image-modal" role="dialog" aria-modal="true" aria-label={selectedImage.title} onMouseDown={(event) => event.stopPropagation()}><button onClick={() => setSelectedImage(null)} aria-label="Cerrar imagen">×</button><img src={selectedImage.src} alt={selectedImage.title} /><figcaption><strong>{selectedImage.title}</strong><p>{selectedImage.caption}</p></figcaption></figure></div>}
       {toast && <div className="toast" role="status"><span>✓</span>{toast}</div>}
     </main>
   );

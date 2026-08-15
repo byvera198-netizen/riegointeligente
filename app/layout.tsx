@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     metadataBase: new URL(origin),
     icons: { icon: "/logo-uef-samborondon.jpeg", shortcut: "/logo-uef-samborondon.jpeg" },
-    openGraph: { title, description, type: "website", locale: "es_EC", images: [{ url: `${origin}/cabecera-riego-inteligente.png`, width: 1680, height: 945, alt: "Prototipo ultrarrealista del Sistema de riego inteligente 1.0" }] },
-    twitter: { card: "summary_large_image", title, description, images: [`${origin}/cabecera-riego-inteligente.png`] },
+    openGraph: { title, description, type: "website", locale: "es_EC", images: [{ url: `${origin}/og.png`, width: 1680, height: 945, alt: "Sistema de riego inteligente 1.0 de la Unidad Educativa Fiscal Samborondón" }] },
+    twitter: { card: "summary_large_image", title, description, images: [`${origin}/og.png`] },
   };
 }
 
