@@ -16,7 +16,7 @@ Las especificaciones son obligatorias; la marca puede variar. Verificar corrient
 | 2 | Flotadores | Inferior de seguridad y superior de lleno |
 | 1 | Caudalímetro | Adecuado al rango real de 1–5 L/min |
 | 1 | Sensor de presión | 0–2 bar preferible o rango calibrable |
-| 1 | INA219 | Medición de corriente/tensión solar |
+| 1 | INA260 | Medición de tensión, corriente y potencia solar hasta 36 V/15 A; verificar que la corriente de cortocircuito del panel no exceda el módulo |
 | 1 | Divisor de batería | Resistencias de precisión + protección ADC |
 | 1 | Pantalla OLED | I²C, opcional para operación local |
 
@@ -74,4 +74,3 @@ El tamaño final se valida midiendo consumo de 24 h, corriente de arranque de la
 - Geotextil, drenaje y bandeja de contención.
 - Soportes independientes para tanque, batería, panel y caja.
 - Batería elevada, sujeta y ventilada; electrónica protegida de agua y fertilizantes.
-

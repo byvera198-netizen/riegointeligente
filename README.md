@@ -19,6 +19,7 @@ La web supervisa y solicita acciones; el ESP32 decide si es seguro ejecutarlas. 
 
 - [Proyecto mejorado](docs/PROYECTO-MEJORADO.md)
 - [Lista de materiales](docs/LISTA-DE-MATERIALES.md)
+- [Descripción detallada de todos los componentes](docs/DESCRIPCION-DETALLADA-DE-TODOS-LOS-COMPONENTES.md)
 - [Montaje y puesta en marcha](docs/MONTAJE-Y-PUESTA-EN-MARCHA.md)
 - [Protocolo de pruebas](docs/PROTOCOLO-DE-PRUEBAS.md)
 - [Contrato de la API](docs/CONTRATO-API.md)

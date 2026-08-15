@@ -6,7 +6,7 @@
 #include <Wire.h>
 #include <Adafruit_ADS1X15.h>
 #include <Adafruit_BME280.h>
-#include <Adafruit_INA219.h>
+#include <Adafruit_INA260.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <RTClib.h>
@@ -28,13 +28,13 @@ constexpr uint8_t PIN_BATTERY = 34;
 constexpr uint8_t PIN_TANK_TRIG = 32;
 constexpr uint8_t PIN_TANK_ECHO = 35; // Usar divisor 5 V → 3,3 V.
 
-constexpr uint32_t SENSOR_INTERVAL_MS = 10'000;
-constexpr uint32_t TELEMETRY_INTERVAL_MS = 60'000;
-constexpr uint32_t COMMAND_INTERVAL_MS = 15'000;
-constexpr uint32_t MAX_PUMP_RUNTIME_MS = 120'000;
-constexpr uint32_t NO_FLOW_TIMEOUT_MS = 5'000;
-constexpr uint32_t VALVE_PREOPEN_MS = 1'500;
-constexpr uint32_t VALVE_CLOSE_DELAY_MS = 1'500;
+constexpr uint32_t SENSOR_INTERVAL_MS = 10000;
+constexpr uint32_t TELEMETRY_INTERVAL_MS = 60000;
+constexpr uint32_t COMMAND_INTERVAL_MS = 15000;
+constexpr uint32_t MAX_PUMP_RUNTIME_MS = 120000;
+constexpr uint32_t NO_FLOW_TIMEOUT_MS = 5000;
+constexpr uint32_t VALVE_PREOPEN_MS = 1500;
+constexpr uint32_t VALVE_CLOSE_DELAY_MS = 1500;
 constexpr float MIN_PRESSURE_BAR = 0.15f;
 constexpr float MAX_PRESSURE_BAR = 1.8f;
 constexpr float MIN_BATTERY_V = 11.8f;
@@ -72,7 +72,7 @@ enum class IrrigationState { IDLE, VALVE_OPENING, PUMPING, VALVE_CLOSING, COOLDO
 
 Adafruit_ADS1115 ads;
 Adafruit_BME280 bme;
-Adafruit_INA219 ina219;
+Adafruit_INA260 ina260;
 OneWire oneWire(PIN_ONE_WIRE);
 DallasTemperature soilTemperatures(&oneWire);
 RTC_DS3231 rtc;
@@ -114,7 +114,7 @@ float readTankPercent() {
   digitalWrite(PIN_TANK_TRIG, HIGH);
   delayMicroseconds(10);
   digitalWrite(PIN_TANK_TRIG, LOW);
-  const uint32_t duration = pulseIn(PIN_TANK_ECHO, HIGH, 35'000);
+  const uint32_t duration = pulseIn(PIN_TANK_ECHO, HIGH, 35000);
   if (duration == 0) return digitalRead(PIN_TANK_LOW) == LOW ? 0.0f : sensors.tankPct;
   const float distance = duration * 0.0343f / 2.0f;
   return clampf(100.0f * (TANK_EMPTY_DISTANCE_CM - distance) /
@@ -156,7 +156,7 @@ void sampleSensors() {
   sensors.tankPct = readTankPercent();
   sensors.batteryV = analogReadMilliVolts(PIN_BATTERY) / 1000.0f * BATTERY_DIVIDER_RATIO;
   sensors.batteryPct = clampf((sensors.batteryV - 11.8f) / (13.8f - 11.8f) * 100.0f, 0.0f, 100.0f);
-  sensors.solarWatts = max(0.0f, ina219.getBusVoltage_V() * ina219.getCurrent_mA() / 1000.0f);
+  sensors.solarWatts = max(0.0f, ina260.readBusVoltage() / 1000.0f * ina260.readCurrent() / 1000.0f);
 
   static uint32_t previousPulses = 0;
   static uint32_t previousAt = millis();
@@ -164,7 +164,7 @@ void sampleSensors() {
   noInterrupts();
   const uint32_t pulses = flowPulses;
   interrupts();
-  const float elapsedMinutes = max(0.001f, (now - previousAt) / 60'000.0f);
+  const float elapsedMinutes = max(0.001f, (now - previousAt) / 60000.0f);
   sensors.flowLpm = (pulses - previousPulses) / FLOW_PULSES_PER_LITER / elapsedMinutes;
   previousPulses = pulses;
   previousAt = now;
@@ -284,7 +284,7 @@ void updateIrrigation() {
       }
       break;
     case IrrigationState::COOLDOWN:
-      if (now - stateStartedAt >= zoneConfig[activeZone].cooldownMinutes * 60'000UL) {
+      if (now - stateStartedAt >= zoneConfig[activeZone].cooldownMinutes * 60000UL) {
         activeZone = -1;
         activeCommandId = "";
         irrigationState = IrrigationState::IDLE;
@@ -292,7 +292,7 @@ void updateIrrigation() {
       break;
     case IrrigationState::FAULT:
       allOutputsOff();
-      if (now - stateStartedAt > 60'000 && digitalRead(PIN_EMERGENCY) == HIGH &&
+      if (now - stateStartedAt > 60000 && digitalRead(PIN_EMERGENCY) == HIGH &&
           digitalRead(PIN_TANK_LOW) == HIGH && sensors.batteryV >= MIN_BATTERY_V) {
         activeZone = -1;
         activeCommandId = "";
@@ -310,7 +310,7 @@ void runAutonomousDecision() {
   const uint32_t now = millis();
   for (uint8_t i = 0; i < 3; i++) {
     const float deficit = zoneConfig[i].minMoisture - sensors.moisture[i];
-    const bool cooldownDone = lastIrrigationAt[i] == 0 || now - lastIrrigationAt[i] >= zoneConfig[i].cooldownMinutes * 60'000UL;
+    const bool cooldownDone = lastIrrigationAt[i] == 0 || now - lastIrrigationAt[i] >= zoneConfig[i].cooldownMinutes * 60000UL;
     if (sensors.valid[i] && cooldownDone && deficit > largestDeficit && dailyMl[i] + zoneConfig[i].pulseMl <= zoneConfig[i].dailyLimitMl) {
       largestDeficit = deficit;
       candidate = i;
@@ -322,7 +322,7 @@ void runAutonomousDecision() {
 void resetDailyCountersIfNeeded() {
   const DateTime now = rtc.now();
   if (now.year() < 2024) return;
-  const uint32_t dayKey = uint32_t(now.year()) * 10'000UL + uint32_t(now.month()) * 100UL + now.day();
+  const uint32_t dayKey = uint32_t(now.year()) * 10000UL + uint32_t(now.month()) * 100UL + now.day();
   if (preferences.getUInt("day", 0) == dayKey) return;
   for (uint8_t i = 0; i < 3; i++) {
     dailyMl[i] = 0;
@@ -402,7 +402,7 @@ void connectWifi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   const uint32_t started = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - started < 15'000) delay(250);
+  while (WiFi.status() != WL_CONNECTED && millis() - started < 15000) delay(250);
 }
 
 void setup() {
@@ -423,7 +423,7 @@ void setup() {
   ads.begin(0x48);
   ads.setGain(GAIN_ONE);
   bme.begin(0x76);
-  ina219.begin();
+  ina260.begin();
   soilTemperatures.begin();
   soilTemperatures.setWaitForConversion(true);
   rtc.begin();
@@ -451,7 +451,7 @@ void loop() {
     lastCommandAt = now;
     pollCommand();
   }
-  if (WiFi.status() != WL_CONNECTED && now - lastWifiAttemptAt > 60'000) connectWifi();
+  if (WiFi.status() != WL_CONNECTED && now - lastWifiAttemptAt > 60000) connectWifi();
   updateIrrigation();
   delay(5);
 }

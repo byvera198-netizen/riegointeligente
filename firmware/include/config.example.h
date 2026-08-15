@@ -37,7 +37,7 @@ constexpr float FLOW_PULSES_PER_LITER = 450.0f;
 // Divisor de tensión de batería. Ajustar con multímetro.
 constexpr float BATTERY_DIVIDER_RATIO = 5.70f;
 
-// Sensor 0,5–4,5 V / 0–1,2 MPa adaptado a 3,3 V mediante divisor.
+// Sensor 0,5–4,5 V / 0–2 bar adaptado a 3,3 V mediante divisor.
 constexpr float PRESSURE_ZERO_ADC = 1900.0f;
 constexpr float PRESSURE_MAX_ADC = 24400.0f;
-constexpr float PRESSURE_MAX_BAR = 12.0f;
+constexpr float PRESSURE_MAX_BAR = 2.0f;
