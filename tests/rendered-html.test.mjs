@@ -30,7 +30,7 @@ test("renderiza el panel del Sistema de riego inteligente 1.0 en español", asyn
   assert.match(html, /Lista de materiales del prototipo/);
   assert.match(html, /ESP32 DevKit/);
   assert.match(html, /INA260/);
-  assert.match(html, /Hasta 36 V\/15 A/);
+  assert.match(html, /Medición solar hasta 36 V\/15 A/);
   assert.match(html, /Proyecto terminado y completamente integrado/);
   assert.match(html, /La web supervisa y solicita; el ESP32 decide/);
   assert.match(html, /Monitorear sistema/);
@@ -45,6 +45,24 @@ test("incluye las protecciones críticas en la interfaz", async () => {
   assert.match(html, /Presión y energía estables/);
   assert.match(html, /límite diario/i);
   assert.match(html, /La protección física siempre tiene prioridad/i);
+});
+
+test("muestra con imagen y ficha los componentes de todos los kits", async () => {
+  const response = await render();
+  const html = await response.text();
+  assert.match(html, /Catálogo completo del proyecto/);
+  assert.match(html, /24/);
+  assert.match(html, /Bomba de diafragma 12 V/);
+  assert.match(html, /Electroválvulas 12 V NC/);
+  assert.match(html, /Microaspersores regulables/);
+  assert.match(html, /Panel solar de 150 W/);
+  assert.match(html, /Controlador de carga solar/);
+  assert.match(html, /Batería AGM 12 V 55 Ah/);
+  assert.match(html, /MOSFET de potencia/);
+  assert.match(html, /Protecciones eléctricas/);
+  assert.match(html, /Convertidor 12 V → 5 V/);
+  assert.match(html, /Caja IP65/);
+  assert.match(html, /Wi‑Fi \+ API \+ base de datos \+ aplicativo web/);
 });
 
 test("integra el manual completo y la navegación institucional", async () => {
