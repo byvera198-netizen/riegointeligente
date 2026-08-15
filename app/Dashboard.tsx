@@ -89,6 +89,25 @@ const componentCatalog = [
   { id: "wiring", number: "16", title: "Cableado, borneras y prensaestopas", kit: "Kit de cableado y montaje", summary: "Ordenan, identifican y protegen todas las conexiones eléctricas del prototipo.", connection: "Cada conductor se dimensiona, rotula y termina con punteras o terminales adecuados.", x: 81, y: 83, focus: "81% 83%", zoom: "300%" },
 ];
 
+const componentCatalogImages: Record<string, string> = {
+  panel: assetPath("materiales/panel-solar-150w.png"),
+  battery: assetPath("materiales/bateria-agm-12v-55ah.png"),
+  tank: assetPath("materiales/kit-hidraulico-auxiliar.webp"),
+  enclosure: assetPath("materiales/caja-ip65.png"),
+  controller: assetPath("materiales/controlador-carga-solar.png"),
+  pump: assetPath("materiales/bomba-diafragma-12v.png"),
+  filter: assetPath("materiales/kit-hidraulico-auxiliar.webp"),
+  esp32: assetPath("materiales/esp32-devkit.png"),
+  valves: assetPath("materiales/electrovalvulas-12v-nc.png"),
+  sprinklers: assetPath("materiales/microaspersores.png"),
+  moisture: assetPath("materiales/sensor-humedad-capacitivo.png"),
+  temperature: assetPath("materiales/ds18b20-impermeable.png"),
+  ultrasonic: assetPath("materiales/sensor-ultrasonico-impermeable.png"),
+  floats: assetPath("materiales/flotadores-nivel.png"),
+  emergency: assetPath("materiales/kit-seguridad-cableado.webp"),
+  wiring: assetPath("materiales/kit-seguridad-cableado.webp"),
+};
+
 const projectMaterials = [
   { id: "esp32", kit: "Control electrónico", quantity: "1", name: "ESP32 DevKit", specification: "3,3 V, Wi‑Fi 2,4 GHz", image: assetPath("materiales/esp32-devkit.png"), role: "Es el controlador principal. Lee los sensores, ejecuta las reglas autónomas, controla bomba y válvulas mediante etapas de potencia, registra eventos y sincroniza la telemetría con el aplicativo web.", connection: "Se alimenta con 5 V regulados; todas sus entradas y salidas trabajan a 3,3 V. Los sensores I²C comparten SDA/SCL y las cargas de 12 V se gobiernan exclusivamente mediante drivers protegidos." },
   { id: "ads1115", kit: "Control electrónico", quantity: "1", name: "ADS1115", specification: "Conversor analógico I²C de 16 bits", image: assetPath("materiales/ads1115.png"), role: "Amplía la capacidad de medición analógica y mejora la resolución de las tres sondas de humedad del suelo y otras señales lentas.", connection: "Comparte el bus I²C con el ESP32. Sus entradas nunca deben superar la tensión de alimentación; cada canal se calibra con valores de suelo seco y húmedo." },
@@ -315,7 +334,7 @@ export default function IrrigationSite() {
             ><span>{component.number}</span><strong>{component.title}</strong></button>)}
           </div>
           <div className="component-index" aria-label="Índice de componentes fotografiados">
-            {componentCatalog.map((component) => <button key={component.id} onClick={() => setSelectedComponent(component)}><span>{component.number}</span><strong>{component.title}</strong><small>{component.kit}</small></button>)}
+            {componentCatalog.map((component) => <button key={component.id} onClick={() => setSelectedComponent(component)}><img src={componentCatalogImages[component.id]} alt="" loading="lazy" /><span>{component.number}</span><strong>{component.title}</strong><small>{component.kit}</small></button>)}
           </div>
         </div>
         <div className="materials-catalog" aria-labelledby="materials-title">
