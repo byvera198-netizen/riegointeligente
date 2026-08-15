@@ -27,6 +27,12 @@ test("renderiza el panel del Sistema de riego inteligente 1.0 en español", asyn
   assert.match(html, /Catálogo fotográfico interactivo/);
   assert.match(html, /Panel solar de 150 W/);
   assert.match(html, /Batería AGM 12 V 55 Ah/);
+  assert.match(html, /Lista de materiales del prototipo/);
+  assert.match(html, /ESP32 DevKit/);
+  assert.match(html, /INA260/);
+  assert.match(html, /Hasta 36 V\/15 A/);
+  assert.match(html, /Proyecto terminado y completamente integrado/);
+  assert.match(html, /La web supervisa y solicita; el ESP32 decide/);
   assert.match(html, /Monitorear sistema/);
   assert.match(html, /Regar 0,40 L/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/);

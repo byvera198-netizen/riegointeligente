@@ -89,6 +89,28 @@ const componentCatalog = [
   { id: "wiring", number: "16", title: "Cableado, borneras y prensaestopas", kit: "Kit de cableado y montaje", summary: "Ordenan, identifican y protegen todas las conexiones eléctricas del prototipo.", connection: "Cada conductor se dimensiona, rotula y termina con punteras o terminales adecuados.", x: 81, y: 83, focus: "81% 83%", zoom: "300%" },
 ];
 
+const controlMaterials = [
+  { id: "esp32", quantity: "1", name: "ESP32 DevKit", specification: "3,3 V, Wi‑Fi 2,4 GHz", image: assetPath("materiales/esp32-devkit.png"), role: "Es el cerebro local del sistema. Lee los sensores, ejecuta las reglas autónomas, controla bomba y válvulas mediante las etapas de potencia, registra eventos y sincroniza la telemetría con el aplicativo web.", connection: "Se alimenta con 5 V regulados; todas sus entradas y salidas trabajan a 3,3 V. Los sensores I²C comparten SDA/SCL y las cargas de 12 V se gobiernan exclusivamente mediante drivers protegidos." },
+  { id: "ads1115", quantity: "1", name: "ADS1115", specification: "ADC I²C de 16 bits", image: assetPath("materiales/ads1115.png"), role: "Amplía la capacidad de medición analógica y mejora la resolución de las tres sondas de humedad del suelo y otras señales lentas.", connection: "Comparte el bus I²C con el ESP32. Sus entradas nunca deben superar la tensión de alimentación; cada canal se calibra con valores de suelo seco y húmedo." },
+  { id: "ds3231", quantity: "1", name: "DS3231", specification: "RTC con batería", image: assetPath("materiales/ds3231.png"), role: "Conserva fecha y hora aunque el sistema pierda energía o Internet. Permite aplicar ventanas horarias, límites diarios y una bitácora cronológica confiable.", connection: "Se conecta al bus I²C y utiliza una batería de respaldo propia. El firmware sincroniza su hora cuando la red está disponible sin depender de ella para regar." },
+  { id: "soil-moisture", quantity: "3", name: "Sensor capacitivo de suelo", specification: "Salida analógica compatible, encapsulado", image: assetPath("materiales/sensor-humedad-capacitivo.png"), role: "Mide la humedad relativa del sustrato en las zonas A, B y C sin exponer electrodos metálicos que se corroen rápidamente.", connection: "Cada sensor llega a un canal independiente del ADS1115. Se instala en la zona radicular, se encapsula la electrónica y se calibra individualmente en seco y a capacidad de campo." },
+  { id: "ds18b20", quantity: "3", name: "DS18B20 impermeable", specification: "Dirección ROM identificable", image: assetPath("materiales/ds18b20-impermeable.png"), role: "Mide la temperatura del suelo de cada cultivo para contextualizar la humedad, detectar condiciones extremas y mejorar las decisiones agronómicas.", connection: "Las tres sondas comparten un bus OneWire con resistencia de elevación. Su dirección ROM se asocia permanentemente a una zona para impedir lecturas cruzadas." },
+  { id: "bme280", quantity: "1", name: "BME280", specification: "Temperatura y humedad ambiental", image: assetPath("materiales/bme280.png"), role: "Registra las condiciones ambientales del huerto. Sus datos permiten interpretar la pérdida de humedad y documentar el contexto de cada riego.", connection: "Se conecta por I²C y se monta en una garita ventilada, a la sombra y protegida de lluvia, radiación directa y salpicaduras." },
+  { id: "ultrasonic", quantity: "1", name: "Sensor ultrasónico impermeable", specification: "Nivel continuo; ECHO adaptado a 3,3 V", image: assetPath("materiales/sensor-ultrasonico-impermeable.png"), role: "Mide de forma continua la distancia hasta el agua y la convierte en porcentaje y litros disponibles en el tanque.", connection: "Se instala verticalmente en la tapa. TRIG sale del ESP32 y ECHO pasa obligatoriamente por un divisor o adaptador de nivel para no aplicar 5 V al controlador." },
+  { id: "floats", quantity: "2", name: "Flotadores", specification: "Inferior de seguridad y superior de lleno", image: assetPath("materiales/flotadores-nivel.png"), role: "Aportan dos confirmaciones físicas independientes: el inferior bloquea la bomba si falta agua y el superior confirma que el tanque alcanzó el nivel de llenado.", connection: "Se leen como contactos digitales con lógica segura. El flotador inferior participa además en el enclavamiento físico que debe detener la bomba aunque el software falle." },
+  { id: "flowmeter", quantity: "1", name: "Caudalímetro", specification: "Adecuado al rango real de 1–5 L/min", image: assetPath("materiales/caudalimetro.png"), role: "Cuenta el agua realmente entregada. Permite regar por volumen, detectar tuberías obstruidas o rotas y comprobar que la bomba respondió.", connection: "Se instala después del filtro y antes del colector de zonas, respetando la flecha de flujo. Su salida de pulsos se adapta a 3,3 V y se calibra mediante aforo." },
+  { id: "pressure", quantity: "1", name: "Sensor de presión", specification: "0–2 bar preferible o rango calibrable", image: assetPath("materiales/sensor-presion.png"), role: "Vigila que la red opere dentro del rango de los microaspersores. Detecta falta de cebado, obstrucción, válvula cerrada y sobrepresión.", connection: "Se monta en una derivación del colector con sello apropiado. Su señal analógica se acondiciona al ADC y se contrasta con el manómetro durante la calibración." },
+  { id: "ina260", quantity: "1", name: "INA260", specification: "Hasta 36 V/15 A; verificar la corriente de cortocircuito del panel", image: assetPath("materiales/ina260.png"), role: "Mide tensión, corriente y potencia del subsistema solar para mostrar producción, consumo y condiciones anómalas en el tablero web.", connection: "Se intercala en el conductor medido y comunica por I²C. Antes de instalarlo se verifica que la corriente de cortocircuito del panel nunca exceda la capacidad real del módulo y sus terminales." },
+  { id: "battery-divider", quantity: "1", name: "Divisor de batería", specification: "Resistencias de precisión + protección ADC", image: assetPath("materiales/divisor-bateria.png"), role: "Reduce la tensión de la batería de 12 V a un nivel seguro para que el controlador calcule estado de carga, baja tensión y recuperación.", connection: "Usa resistencias de precisión, limitación de corriente, filtro y protección de entrada. Su relación se calibra con multímetro y la salida nunca puede superar 3,3 V." },
+  { id: "oled", quantity: "1", name: "Pantalla OLED", specification: "I²C, opcional para operación local", image: assetPath("materiales/pantalla-oled.png"), role: "Muestra localmente estado, nivel, batería, zona activa y alarmas durante instalación, mantenimiento o pérdida de conectividad.", connection: "Comparte el bus I²C, se alimenta a la tensión indicada por el módulo y se configura con una dirección que no entre en conflicto. No es necesaria para la autonomía." },
+];
+
+const finalProjectVisual = {
+  src: assetPath("proyecto-final-operativo-v1.png"),
+  title: "Sistema completo instalado y en operación",
+  caption: "Vista técnica del prototipo integrado: tres cultivos, seis emisores, energía solar, reserva de agua, hidráulica protegida, control ESP32, sensores y supervisión web.",
+};
+
 const events = [
   { time: "11:24", title: "Riego iniciado · Zona A", detail: "Déficit de humedad de 7 puntos" },
   { time: "11:23", title: "Validación hidráulica correcta", detail: "1,0 bar · caudal confirmado" },
@@ -117,6 +139,7 @@ export default function IrrigationSite() {
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
   const [selectedImage, setSelectedImage] = useState<(typeof gallery)[number] | null>(null);
   const [selectedComponent, setSelectedComponent] = useState<(typeof componentCatalog)[number] | null>(null);
+  const [selectedMaterial, setSelectedMaterial] = useState<(typeof controlMaterials)[number] | null>(null);
   const [toast, setToast] = useState("");
   const [isLive, setIsLive] = useState(false);
   const [systemPaused, setSystemPaused] = useState(false);
@@ -272,11 +295,60 @@ export default function IrrigationSite() {
             {componentCatalog.map((component) => <button key={component.id} onClick={() => setSelectedComponent(component)}><span>{component.number}</span><strong>{component.title}</strong><small>{component.kit}</small></button>)}
           </div>
         </div>
+        <div className="materials-catalog" aria-labelledby="materials-title">
+          <div className="materials-heading">
+            <div><span className="eyebrow">Lista de materiales del prototipo</span><h3 id="materials-title">Control y medición</h3></div>
+            <p>Las especificaciones son obligatorias; la marca puede variar. Verificar corriente, tensión, presión mínima y disponibilidad antes de comprar.</p>
+          </div>
+          <div className="materials-stats" aria-label="Resumen de materiales de control y medición">
+            <div><strong>13</strong><span>referencias</span></div><div><strong>18</strong><span>unidades totales</span></div><div><strong>12 + 1</strong><span>obligatorios + opcional</span></div>
+          </div>
+          <div className="materials-grid">
+            {controlMaterials.map((material, index) => <article className="material-card" key={material.id}>
+              <button onClick={() => setSelectedMaterial(material)} aria-label={`Ver función de ${material.name}`}>
+                <span className="material-photo"><img src={material.image} alt={`Fotografía técnica de ${material.name}`} loading="lazy" /><b>{String(index + 1).padStart(2, "0")}</b></span>
+                <span className="material-copy"><small>Cantidad: {material.quantity}</small><strong>{material.name}</strong><em>{material.specification}</em><i>Ver función y conexión →</i></span>
+              </button>
+            </article>)}
+          </div>
+          <div className="materials-table-wrap">
+            <table>
+              <caption>Especificaciones mínimas de compra para control y medición</caption>
+              <thead><tr><th>Cantidad</th><th>Elemento</th><th>Especificación mínima</th></tr></thead>
+              <tbody>{controlMaterials.map((material) => <tr key={`row-${material.id}`}><td>{material.quantity}</td><th scope="row">{material.name}</th><td>{material.specification}</td></tr>)}</tbody>
+            </table>
+          </div>
+        </div>
         <div className="kit-grid">
           {kitCards.map((kit) => <article className="kit-card" key={kit.number}>
             <div className="kit-image"><img src={kit.image} alt={`Visualización del ${kit.title}`} /><span>{kit.number}</span></div>
             <div className="kit-body"><h3>{kit.title}</h3><p>{kit.summary}</p><ul>{kit.items.map((item) => <li key={item}>{item}</li>)}</ul><a href={`#${kit.target}`}>Ver kit completo <span>→</span></a></div>
           </article>)}
+        </div>
+      </section>
+
+      <section className="final-project-section" aria-labelledby="final-project-title">
+        <div className="section final-project-inner">
+          <div className="final-project-visual">
+            <button onClick={() => setSelectedImage(finalProjectVisual)} aria-label="Ampliar imagen del sistema completo instalado">
+              <img src={finalProjectVisual.src} alt="Sistema de riego inteligente terminado, instalado y funcionando en tres zonas de cultivo" />
+              <span>Ampliar imagen <b>↗</b></span>
+            </button>
+          </div>
+          <div className="final-project-description">
+            <span className="eyebrow">Integración final del proyecto</span>
+            <h2 id="final-project-title">Proyecto terminado y completamente integrado.</h2>
+            <p>El Sistema de riego inteligente 1.0 de la Unidad Educativa Fiscal Samborondón es un prototipo autónomo, solar y conectado para una cama agrícola de 2 × 1 m dividida en tomate, lechuga y pimiento. Combina generación y almacenamiento de energía, reserva de agua, filtrado, bombeo, tres ramales independientes, seis microaspersores, medición agronómica e hidráulica y un controlador ESP32 con supervisión web.</p>
+            <p>Su operación no depende de Internet: el ESP32 conserva horarios, umbrales y límites, evalúa localmente todas las protecciones y registra cada resultado. La aplicación permite observar el estado, consultar históricos y solicitar un riego, pero ninguna orden remota puede anular un nivel bajo, una batería insuficiente, la parada de emergencia, una anomalía de presión o caudal ni el volumen máximo diario.</p>
+            <div className="final-project-flow">
+              <div><span>01</span><p><strong>Alimentar</strong><small>El panel carga la batería y las protecciones distribuyen 12 V y 5 V.</small></p></div>
+              <div><span>02</span><p><strong>Medir</strong><small>Suelo, ambiente, nivel, caudal, presión, batería y potencia solar.</small></p></div>
+              <div><span>03</span><p><strong>Validar</strong><small>Hora, déficit, tanque, energía, emergencia y límite diario.</small></p></div>
+              <div><span>04</span><p><strong>Regar</strong><small>Una válvula por vez, bomba activa y volumen confirmado por pulsos.</small></p></div>
+              <div><span>05</span><p><strong>Comprobar</strong><small>Detiene, registra el resultado y actualiza el aplicativo web.</small></p></div>
+            </div>
+            <div className="autonomy-rule"><span>✓</span><p><strong>Autoridad local segura</strong><small>La web supervisa y solicita; el ESP32 decide si la ejecución es segura.</small></p></div>
+          </div>
         </div>
       </section>
 
@@ -346,6 +418,11 @@ export default function IrrigationSite() {
         <button className="component-close" onClick={() => setSelectedComponent(null)} aria-label="Cerrar descripción del componente">×</button>
         <div className="component-specific-photo" role="img" aria-label={`Acercamiento fotográfico de ${selectedComponent.title}`} style={{ backgroundImage: `url(${assetPath("catalogo-componentes-v1.png")})`, backgroundPosition: selectedComponent.focus, backgroundSize: selectedComponent.zoom }} />
         <div className="component-modal-copy"><span className="eyebrow">{selectedComponent.number} · {selectedComponent.kit}</span><h2 id="component-title">{selectedComponent.title}</h2><p>{selectedComponent.summary}</p><div><strong>Conexión en el proyecto</strong><p>{selectedComponent.connection}</p></div><a href="#documentacion" onClick={() => setSelectedComponent(null)}>Consultar especificación completa →</a></div>
+      </article></div>}
+      {selectedMaterial && <div className="modal-backdrop material-backdrop" onMouseDown={() => setSelectedMaterial(null)}><article className="material-modal" role="dialog" aria-modal="true" aria-labelledby="material-title" onMouseDown={(event) => event.stopPropagation()}>
+        <button className="component-close" onClick={() => setSelectedMaterial(null)} aria-label="Cerrar ficha del material">×</button>
+        <div className="material-modal-photo"><img src={selectedMaterial.image} alt={`Fotografía de ${selectedMaterial.name}`} /></div>
+        <div className="material-modal-copy"><span className="eyebrow">Cantidad requerida: {selectedMaterial.quantity}</span><h2 id="material-title">{selectedMaterial.name}</h2><div className="material-spec"><strong>Especificación mínima</strong><p>{selectedMaterial.specification}</p></div><div><strong>Qué es y qué función cumple</strong><p>{selectedMaterial.role}</p></div><div><strong>Conexión e instalación</strong><p>{selectedMaterial.connection}</p></div><button onClick={() => setSelectedMaterial(null)}>Volver a la lista</button></div>
       </article></div>}
       {selectedZone && <div className="modal-backdrop" onMouseDown={() => setSelectedZone(null)}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="watering-title" onMouseDown={(event) => event.stopPropagation()}><span className="modal-icon">⌁</span><span className="eyebrow">Orden remota protegida</span><h2 id="watering-title">Regar Zona {selectedZone.id}</h2><p>Se solicitará un pulso de <strong>0,40 litros</strong> para {selectedZone.crop}. El ESP32 validará tanque, batería, caudal, presión, emergencia y límite diario antes de activar la bomba.</p><div className="safety-checks"><span>✓ Tanque {telemetry.tankLevel} %</span><span>✓ Batería {telemetry.batteryPct} %</span><span>✓ Límite disponible</span></div><div className="modal-actions"><button onClick={() => setSelectedZone(null)}>Cancelar</button><button className="primary" onClick={() => void confirmWatering(selectedZone)}>Confirmar riego</button></div></div></div>}
       {selectedImage && <div className="modal-backdrop image-backdrop" onMouseDown={() => setSelectedImage(null)}><figure className="image-modal" role="dialog" aria-modal="true" aria-label={selectedImage.title} onMouseDown={(event) => event.stopPropagation()}><button onClick={() => setSelectedImage(null)} aria-label="Cerrar imagen">×</button><img src={selectedImage.src} alt={selectedImage.title} /><figcaption><strong>{selectedImage.title}</strong><p>{selectedImage.caption}</p></figcaption></figure></div>}
