@@ -129,9 +129,9 @@ const projectMaterials = [
 ];
 
 const finalProjectVisual = {
-  src: assetPath("proyecto-final-operativo-v1.png"),
+  src: assetPath("proyecto-final-operativo-ultra-v2.webp"),
   title: "Sistema completo instalado y en operación",
-  caption: "Vista técnica del prototipo integrado: tres cultivos, seis emisores, energía solar, reserva de agua, hidráulica protegida, control ESP32, sensores y supervisión web.",
+  caption: "Vista fotográfica ultrarrealista del prototipo integrado: tres cultivos, seis emisores, energía solar, reserva de agua, hidráulica protegida, control ESP32, sensores y supervisión web.",
 };
 
 const events = [
