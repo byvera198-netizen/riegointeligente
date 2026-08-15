@@ -150,10 +150,13 @@ button { color: inherit; }
 .component-feature small { color: rgba(255,255,255,.55); font-size: 10px; }
 .component-feature img { width: 100%; height: 100%; object-fit: cover; }
 .components-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.component-card { display: flex; min-height: 310px; padding: 28px; cursor: pointer; text-align: left; color: white; border: 1px solid rgba(255,255,255,.11); border-radius: 18px; background: rgba(255,255,255,.035); flex-direction: column; transition: border 180ms ease, transform 180ms ease, background 180ms ease; }
+.component-card { display: flex; min-height: 420px; padding: 12px 20px 24px; cursor: pointer; text-align: left; color: white; border: 1px solid rgba(255,255,255,.11); border-radius: 18px; background: rgba(255,255,255,.035); flex-direction: column; transition: border 180ms ease, transform 180ms ease, background 180ms ease; overflow: hidden; }
+.component-visual { position: relative; width: calc(100% + 40px); height: 165px; margin: -12px -20px 18px; background-repeat: no-repeat; background-color: #eef1ed; border-bottom: 1px solid rgba(255,255,255,.12); }
+.component-visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 58%, rgba(0,20,13,.78)); }
+.component-visual > span { position: absolute; z-index: 1; right: 12px; bottom: 9px; left: 12px; color: white; font-size: 9px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-shadow: 0 1px 5px rgba(0,0,0,.65); }
 .component-card:hover { transform: translateY(-5px); border-color: rgba(200,237,0,.55); background: rgba(255,255,255,.07); }
 .component-index { color: var(--lime); font-family: "Montserrat", sans-serif; font-size: 10px; font-weight: 800; }
-.component-card > small { margin-top: 22px; color: rgba(255,255,255,.45); font-size: 9px; letter-spacing: .09em; text-transform: uppercase; }
+.component-card > small { margin-top: 10px; color: rgba(255,255,255,.45); font-size: 9px; letter-spacing: .09em; text-transform: uppercase; }
 .component-card h3 { margin: 10px 0 13px; font-family: "Montserrat", sans-serif; font-size: 18px; line-height: 1.2; }
 .component-card p { display: -webkit-box; margin: 0; overflow: hidden; color: rgba(255,255,255,.55); font-size: 11px; line-height: 1.65; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
 .component-card > div { display: flex; margin-top: auto; padding-top: 24px; align-items: center; justify-content: space-between; gap: 12px; }
@@ -302,7 +305,8 @@ footer a { justify-self: end; color: var(--lime); font-weight: 800; text-transfo
 .modal-backdrop { position: absolute; inset: 0; cursor: zoom-out; border: 0; background: transparent; }
 .modal-close { position: fixed; z-index: 5; top: 22px; right: 24px; display: grid; width: 46px; height: 46px; place-items: center; color: white; cursor: pointer; border: 1px solid rgba(255,255,255,.28); border-radius: 50%; background: rgba(255,255,255,.07); font-size: 27px; }
 .component-modal { position: relative; z-index: 2; display: grid; width: min(1100px, 94vw); max-height: 88vh; overflow: auto; grid-template-columns: 1.05fr .95fr; border: 1px solid rgba(255,255,255,.16); border-radius: 24px; background: white; box-shadow: 0 40px 120px rgba(0,0,0,.45); }
-.component-modal > img { width: 100%; height: 100%; min-height: 620px; object-fit: cover; }
+.component-modal > .component-visual { width: 100%; height: 100%; min-height: 620px; margin: 0; border: 0; }
+.component-modal > .component-visual::after { background: linear-gradient(180deg, transparent 72%, rgba(0,20,13,.72)); }
 .component-modal > div { padding: 60px 50px; }
 .component-modal h2 { margin: 0 0 18px; font-family: "Montserrat", sans-serif; font-size: 38px; letter-spacing: -.04em; line-height: 1.05; }
 .component-modal h3 { margin: 32px 0 8px; font-size: 11px; text-transform: uppercase; }
