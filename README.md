@@ -1,51 +1,31 @@
 # Sistema de Riego Inteligente
 
-Proyecto educativo de la **Unidad Educativa Fiscal Samborondón** que integra agricultura de precisión, automatización por microzonas y alimentación mediante energía solar.
+Sitio web oficial del proyecto educativo de la **Unidad Educativa Fiscal Samborondón**. Presenta un prototipo autónomo de agricultura de precisión, construido sobre una cama de cultivo de **1 × 2 metros**, alimentado con energía solar y supervisado mediante una aplicación web.
 
-![Presentación del Sistema de Riego Inteligente](public/og.png)
+![Sistema de Riego Inteligente](public/og.png)
 
-## Visión del proyecto
+## Experiencia web
 
-La maqueta funcional mide **1 metro de ancho por 2 metros de largo** y representa tres zonas agrícolas independientes:
+- Portada institucional premium inspirada en la identidad visual del proyecto.
+- Monitoreo interactivo de tomate, lechuga y pimiento.
+- Simulación de humedad, prioridad hídrica y ciclos automáticos o manuales.
+- Catálogo técnico con búsqueda, filtros y fichas de componentes.
+- Arquitectura completa de energía, control, sensores, hidráulica y web.
+- Guía de instalación en ocho fases.
+- Galería ampliable con las diez imágenes finales del proyecto.
+- Simulador conceptual de escalabilidad hasta 200 hectáreas.
+- Descarga del informe general en Word.
 
-- Zona A: tomate.
-- Zona B: lechuga.
-- Zona C: pimiento.
+## Arquitectura del prototipo
 
-Cada zona utiliza un sensor capacitivo de humedad. El controlador ESP32 compara las lecturas con umbrales configurables, identifica la mayor necesidad hídrica y activa únicamente el canal correspondiente. Después de cada pulso se aplica un periodo de estabilización para evitar decisiones repetitivas y exceso de agua.
+- **Control:** ESP32, ADS1115, RTC DS3231, microSD y pantalla LCD.
+- **Sensores:** humedad y temperatura por zona, ambiente, nivel, caudal, presión y corriente.
+- **Actuación:** una bomba de diafragma de 12 V, tres electroválvulas y seis microaspersores.
+- **Energía:** panel solar, controlador de carga, batería AGM elevada, distribución DC protegida y convertidor de 5 V.
+- **Hidráulica:** tanque de 40–60 L, filtro de 120 mesh, retención, medición y colector de tres vías.
+- **Interfaz:** control local autónomo y supervisión web responsiva.
 
-La maqueta sirve como unidad mínima de una arquitectura escalable hacia plantaciones agrícolas, donde las microzonas evolucionan a sectores hidráulicos, válvulas de campo y estaciones remotas.
-
-## Página interactiva
-
-La experiencia web incluye:
-
-- Simulador de humedad para las tres zonas.
-- Priorización automática del sector con mayor déficit.
-- Protección por nivel bajo del tanque.
-- Simulación de sequía y ciclos de riego.
-- Selector conceptual de escala agrícola por hectáreas.
-- Arquitectura energética y electrónica.
-- Guía resumida de instalación y puesta en marcha.
-- Galería del prototipo final.
-- Descarga del informe general del proyecto.
-
-Sitio publicado: [sistema-riego-inteligente-samborondon.eemite.chatgpt.site](https://sistema-riego-inteligente-samborondon.eemite.chatgpt.site)
-
-> El sitio está configurado con acceso privado y puede solicitar autenticación con ChatGPT.
-
-## Arquitectura técnica
-
-- **Control:** ESP32.
-- **Sensado:** tres sensores capacitivos de humedad y sensor de nivel.
-- **Actuación:** tres bombas o canales de potencia independientes mediante MOSFET.
-- **Energía:** panel solar, controlador de carga, batería AGM elevada y convertidor DC–DC.
-- **Interfaz:** pantalla local y panel web dinámico.
-- **Seguridad:** fusibles, canaletas, caja protegida y separación entre agua, potencia y señales.
-
-El núcleo trabaja en corriente continua: bombas de 12 V y conversión a 5 V para el ESP32. El inversor del kit se conserva como salida auxiliar.
-
-## Ejecutar localmente
+## Desarrollo local
 
 Requiere Node.js `>=22.13.0`.
 
@@ -54,36 +34,14 @@ npm install
 npm run dev
 ```
 
-Abra `http://localhost:3000` en el navegador.
-
-## Verificación
+Validación:
 
 ```bash
 npm run lint
 npm test
 ```
 
-`npm test` genera la compilación de producción y comprueba el contenido institucional, las interacciones principales y la presencia de los recursos de presentación.
-
-## Estructura principal
-
-```text
-app/
-  page.tsx          Experiencia interactiva
-  globals.css       Diseño premium y adaptación móvil
-public/
-  og.png            Portada institucional
-  proyecto-*.png    Visualizaciones del prototipo
-  estacion-solar.png
-  logo-institucion.jpeg
-  Informe_general_Sistema_de_Riego_Inteligente.docx
-tests/
-  rendered-html.test.mjs
-```
-
-## Validación responsable
-
-El proyecto evita afirmar porcentajes de ahorro antes de medirlos. Su impacto se demuestra registrando lecturas, litros aplicados, uniformidad por zona, autonomía energética y respuesta de los cultivos durante ensayos comparativos.
+Sitio publicado: [sistema-riego-inteligente-samborondon.eemite.chatgpt.site](https://sistema-riego-inteligente-samborondon.eemite.chatgpt.site)
 
 ---
 

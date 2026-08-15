@@ -1,498 +1,361 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Zone = {
   id: "A" | "B" | "C";
   crop: string;
   humidity: number;
   threshold: number;
-  tone: string;
+  temperature: number;
+  color: string;
+};
+
+type Category = "Energía" | "Control" | "Sensores" | "Hidráulica" | "Estructura";
+
+type Component = {
+  name: string;
+  category: Category;
+  description: string;
+  function: string;
+  quantity: string;
+  spec: string;
+  image: string;
 };
 
 const initialZones: Zone[] = [
-  { id: "A", crop: "Tomate", humidity: 42, threshold: 45, tone: "#e15c46" },
-  { id: "B", crop: "Lechuga", humidity: 57, threshold: 50, tone: "#d8ad3d" },
-  { id: "C", crop: "Pimiento", humidity: 36, threshold: 44, tone: "#3ea969" },
+  { id: "A", crop: "Tomate", humidity: 43, threshold: 45, temperature: 24.8, color: "#f05b49" },
+  { id: "B", crop: "Lechuga", humidity: 55, threshold: 50, temperature: 23.6, color: "#d7e629" },
+  { id: "C", crop: "Pimiento", humidity: 48, threshold: 44, temperature: 25.1, color: "#35c978" },
+];
+
+const categoryImages: Record<Category, string> = {
+  Energía: "/03-kit-energia-solar.png",
+  Control: "/06-electronica-control.png",
+  Sensores: "/05-sensores-instrumentacion.png",
+  Hidráulica: "/04-kit-hidraulico.png",
+  Estructura: "/09-estructura-seguridad.png",
+};
+
+const components: Component[] = [
+  { name: "Panel solar monocristalino", category: "Energía", quantity: "1 unidad", spec: "150–200 W recomendado", description: "Módulo fotovoltaico montado sobre estructura de aluminio con inclinación y ventilación posterior.", function: "Convierte la radiación solar en electricidad para cargar la batería y sostener la operación autónoma.", image: categoryImages.Energía },
+  { name: "Controlador de carga PWM", category: "Energía", quantity: "1 unidad", spec: "12 V · 15 A mínimo", description: "Regulador situado entre el panel, la batería y las cargas de corriente continua.", function: "Administra la carga de la batería, evita sobrecargas y protege la alimentación del sistema.", image: categoryImages.Energía },
+  { name: "Batería AGM", category: "Energía", quantity: "1 unidad", spec: "12 V · 55 Ah", description: "Acumulador sellado instalado en una repisa elevada, seca, ventilada y sujeto mediante correa.", function: "Almacena energía para que el riego continúe durante la noche o cuando disminuye la radiación solar.", image: categoryImages.Energía },
+  { name: "Fusible principal DC", category: "Energía", quantity: "1 + repuestos", spec: "15 A · junto al positivo", description: "Protección instalada a pocos centímetros del borne positivo de la batería.", function: "Interrumpe el circuito ante sobrecorriente y reduce el riesgo de daño en cables y equipos.", image: categoryImages.Energía },
+  { name: "Convertidor DC–DC", category: "Energía", quantity: "1 unidad", spec: "12 V a 5 V · 3 A", description: "Módulo reductor regulado con entrada desde la distribución protegida de 12 V.", function: "Entrega 5 V estables al ESP32, sensores, pantalla y módulos de bajo consumo.", image: categoryImages.Energía },
+  { name: "Inversor auxiliar", category: "Energía", quantity: "1 unidad", spec: "300 W", description: "Equipo incluido en el kit solar y conectado a una rama independiente con protección.", function: "Alimenta únicamente cargas auxiliares de corriente alterna; no forma parte de la ruta principal eficiente.", image: categoryImages.Energía },
+  { name: "Cables solares y conectores MC4", category: "Energía", quantity: "1 juego", spec: "Rojo/negro · UV", description: "Conductores flexibles, terminales de anillo, conectores y elementos de fijación para intemperie.", function: "Transportan energía con polaridad identificada y conexiones resistentes al ambiente.", image: categoryImages.Energía },
+
+  { name: "ESP32 DevKit", category: "Control", quantity: "1 unidad", spec: "Wi‑Fi integrado", description: "Microcontrolador de hardware libre programable desde Arduino IDE.", function: "Lee sensores, ejecuta la lógica autónoma, controla bomba y válvulas y comunica datos con la web.", image: categoryImages.Control },
+  { name: "Convertidor ADS1115", category: "Control", quantity: "1 unidad", spec: "ADC · 16 bits", description: "Módulo de conversión analógica de alta resolución conectado por I²C.", function: "Mejora la estabilidad de las lecturas de humedad y evita limitaciones del ADC interno del ESP32.", image: categoryImages.Control },
+  { name: "Reloj DS3231", category: "Control", quantity: "1 unidad", spec: "RTC con respaldo", description: "Reloj de tiempo real con batería propia para conservar fecha y hora.", function: "Registra cada riego, alarma y medición con una marca temporal confiable aun sin internet.", image: categoryImages.Control },
+  { name: "Módulo microSD", category: "Control", quantity: "1 unidad", spec: "Registro local", description: "Lector de tarjeta instalado dentro del gabinete protegido.", function: "Guarda historial operativo para análisis, evaluación escolar y recuperación cuando no existe conexión.", image: categoryImages.Control },
+  { name: "Pantalla LCD 20×4", category: "Control", quantity: "1 unidad", spec: "Interfaz I²C", description: "Pantalla local retroiluminada visible desde el panel frontal.", function: "Muestra humedad, modo, zona activa, nivel del tanque, batería y alarmas sin depender de la web.", image: categoryImages.Control },
+  { name: "Drivers MOSFET", category: "Control", quantity: "4 canales", spec: "Nivel lógico · 12 V", description: "Etapa electrónica dimensionada para una bomba y tres electroválvulas, con diodos de protección.", function: "Permite al ESP32 conmutar cargas de mayor corriente sin someter sus pines a esfuerzos eléctricos.", image: categoryImages.Control },
+  { name: "Gabinete IP65", category: "Control", quantity: "1 unidad", spec: "Puerta transparente", description: "Caja cerrada con riel, canaletas, borneras, prensaestopas y separación de señales y potencia.", function: "Mantiene la electrónica seca, organizada, inspeccionable y protegida contra polvo y salpicaduras.", image: categoryImages.Control },
+  { name: "Parada de emergencia", category: "Control", quantity: "1 unidad", spec: "Pulsador tipo hongo", description: "Mando rojo de enclavamiento instalado en un lugar frontal y accesible.", function: "Corta inmediatamente la energía de bomba y válvulas manteniendo disponible el registro de control.", image: categoryImages.Control },
+  { name: "Selector AUTO/MANUAL", category: "Control", quantity: "1 unidad", spec: "2 posiciones", description: "Selector físico para operación autónoma o intervención durante pruebas y mantenimiento.", function: "Permite cambiar el modo de trabajo sin modificar la programación del controlador.", image: categoryImages.Control },
+
+  { name: "Sensor capacitivo de humedad", category: "Sensores", quantity: "3 unidades", spec: "1 por zona · sellado", description: "Sonda de pala plana recubierta, instalada a la profundidad representativa de las raíces.", function: "Mide el contenido relativo de humedad sin exponer electrodos metálicos propensos a corrosión.", image: categoryImages.Sensores },
+  { name: "Sonda DS18B20", category: "Sensores", quantity: "3 unidades", spec: "Acero inoxidable", description: "Sensor digital impermeable colocado en el suelo de cada zona.", function: "Registra la temperatura radicular para contextualizar las lecturas y detectar condiciones anómalas.", image: categoryImages.Sensores },
+  { name: "Sensor ambiental BME280", category: "Sensores", quantity: "1 unidad", spec: "Temperatura · humedad · presión", description: "Módulo protegido por cubierta ventilada y ubicado fuera del gabinete.", function: "Aporta condiciones ambientales para interpretar la demanda hídrica y documentar el ensayo.", image: categoryImages.Sensores },
+  { name: "Flotadores de nivel", category: "Sensores", quantity: "2 unidades", spec: "Nivel bajo y alto", description: "Interruptores instalados en dos alturas del tanque de almacenamiento.", function: "Impiden el trabajo en seco de la bomba y reportan disponibilidad o llenado del depósito.", image: categoryImages.Sensores },
+  { name: "Medidor de caudal", category: "Sensores", quantity: "1 unidad", spec: "Efecto Hall", description: "Sensor en línea instalado después de la bomba y antes del colector de zonas.", function: "Confirma circulación de agua, calcula volumen aplicado y detecta obstrucciones o fallas de bombeo.", image: categoryImages.Sensores },
+  { name: "Sensor de presión", category: "Sensores", quantity: "1 unidad", spec: "0–10 bar", description: "Transductor roscado complementado por un manómetro analógico de inspección.", function: "Supervisa la presión hidráulica y permite detener el sistema ante fugas, bloqueo o sobrepresión.", image: categoryImages.Sensores },
+  { name: "Sensor de corriente", category: "Sensores", quantity: "1 unidad", spec: "Monitor DC", description: "Módulo de medición instalado en la rama de potencia de la bomba.", function: "Ayuda a identificar bomba bloqueada, consumo anormal y problemas eléctricos antes de que causen daño.", image: categoryImages.Sensores },
+
+  { name: "Tanque de agua", category: "Hidráulica", quantity: "1 unidad", spec: "40–60 L", description: "Depósito azul con tapa, salida inferior y soporte metálico estable.", function: "Conserva el agua de riego y entrega una reserva suficiente para demostraciones autónomas.", image: categoryImages.Hidráulica },
+  { name: "Filtro de riego", category: "Hidráulica", quantity: "1 unidad", spec: "120 mesh", description: "Filtro lavable de carcasa transparente instalado antes de la bomba.", function: "Retiene partículas que podrían obstruir el caudalímetro, las válvulas y los microaspersores.", image: categoryImages.Hidráulica },
+  { name: "Bomba de diafragma", category: "Hidráulica", quantity: "1 unidad", spec: "12 V · 3–5 L/min", description: "Bomba compacta de corriente continua fijada sobre base antivibratoria.", function: "Genera el caudal y la presión necesarios para irrigar una zona a la vez.", image: categoryImages.Hidráulica },
+  { name: "Válvula de retención", category: "Hidráulica", quantity: "1 unidad", spec: "½ pulgada", description: "Accesorio instalado en la línea principal respetando el sentido del flujo.", function: "Evita el retorno del agua y ayuda a conservar cebada la conducción.", image: categoryImages.Hidráulica },
+  { name: "Colector de tres vías", category: "Hidráulica", quantity: "1 unidad", spec: "Tres sectores", description: "Manifold rígido situado después de los instrumentos de caudal y presión.", function: "Distribuye el suministro principal hacia las tres zonas independientes.", image: categoryImages.Hidráulica },
+  { name: "Electroválvulas", category: "Hidráulica", quantity: "3 unidades", spec: "12 V · normalmente cerradas", description: "Válvulas de acción directa, una por tomate, lechuga y pimiento.", function: "Aíslan cada sector y permiten que el controlador aplique agua únicamente donde existe demanda.", image: categoryImages.Hidráulica },
+  { name: "Tubería principal PE", category: "Hidráulica", quantity: "Según trazado", spec: "16 mm · protección UV", description: "Manguera negra para la conducción principal y los lazos de cada zona.", function: "Transporta el agua con pérdidas reducidas y una instalación ordenada y reparable.", image: categoryImages.Hidráulica },
+  { name: "Microtubo y microaspersores", category: "Hidráulica", quantity: "6 emisores", spec: "2 por zona · regulables", description: "Ramales de 6 mm y emisores sobre estacas distribuidos de forma uniforme.", function: "Aplican una lluvia fina ajustable sobre el suelo de cada cultivo y permiten comparar uniformidad.", image: categoryImages.Hidráulica },
+
+  { name: "Cama de cultivo", category: "Estructura", quantity: "1 unidad", spec: "2,00 × 1,00 m", description: "Estructura de madera tratada dividida en tres microzonas equivalentes.", function: "Contiene el sustrato y reproduce a escala controlada sectores agrícolas con diferentes cultivos.", image: categoryImages.Estructura },
+  { name: "Revestimiento y drenaje", category: "Estructura", quantity: "1 juego", spec: "HDPE + malla", description: "Barrera impermeable y capa drenante instaladas sin bloquear la evacuación del exceso de agua.", function: "Protege la estructura, controla filtraciones y evita encharcamientos durante las pruebas.", image: categoryImages.Estructura },
+  { name: "Soportes elevados", category: "Estructura", quantity: "3 conjuntos", spec: "Tanque · batería · panel", description: "Bastidores metálicos o de aluminio anclados y dimensionados para cada carga.", function: "Mantienen los equipos estables, secos, ventilados y separados del suelo húmedo.", image: categoryImages.Estructura },
+  { name: "Canalización y fijaciones", category: "Estructura", quantity: "1 juego", spec: "IP67 · protección UV", description: "Canaletas, conduit, cajas de paso, prensaestopas, abrazaderas y tornillería inoxidable.", function: "Ordenan los recorridos, evitan esfuerzos en terminales y separan agua, potencia y señales.", image: categoryImages.Estructura },
+  { name: "Seguridad y herramientas", category: "Estructura", quantity: "1 juego", spec: "EPP + multímetro", description: "Gafas, guantes, extintor, multímetro, crimpadora, destornilladores y cortatubo.", function: "Permiten construir, comprobar y mantener la maqueta siguiendo prácticas seguras.", image: categoryImages.Estructura },
 ];
 
 const gallery = [
-  {
-    src: "/proyecto-frontal.png",
-    eyebrow: "Vista frontal",
-    title: "Prototipo completo de 2 m²",
-    alt: "Vista frontal ultra realista del Sistema de Riego Inteligente con tres zonas, tanque y estación solar",
-  },
-  {
-    src: "/proyecto-isometrico.png",
-    eyebrow: "Diseño físico",
-    title: "Distribución isométrica",
-    alt: "Vista isométrica del prototipo con las zonas de tomate, lechuga y pimiento",
-  },
-  {
-    src: "/estacion-solar.png",
-    eyebrow: "Energía protegida",
-    title: "Estación solar elevada",
-    alt: "Detalle de la estación solar con panel, controlador, inversor y batería elevada",
-  },
-];
+  ["/01-maqueta-completa.png", "Maqueta completa", "Prototipo funcional de 1 × 2 metros"],
+  ["/02-arquitectura-principal.png", "Arquitectura principal", "Energía, agua, control y comunicación"],
+  ["/03-kit-energia-solar.png", "Energía solar", "Componentes fotovoltaicos y protecciones"],
+  ["/04-kit-hidraulico.png", "Sistema hidráulico", "Tanque, bomba, válvulas y distribución"],
+  ["/05-sensores-instrumentacion.png", "Instrumentación", "Sensores de campo resistentes y medibles"],
+  ["/06-electronica-control.png", "Automatización", "Controlador, módulos, gabinete y mandos"],
+  ["/07-conexion-electrica.png", "Conexión eléctrica", "Distribución DC protegida y documentada"],
+  ["/08-conexion-hidraulica.png", "Conexión hidráulica", "Tres zonas independientes y seis emisores"],
+  ["/09-estructura-seguridad.png", "Montaje y seguridad", "Estructura, herramientas y protección"],
+  ["/10-control-remoto-web.png", "Aplicación web", "Supervisión responsiva desde cualquier dispositivo"],
+] as const;
 
 const installation = [
-  ["01", "Preparar", "Construir la cama de 1 × 2 m, dividir las tres microzonas y fijar soportes elevados."],
-  ["02", "Hidratar", "Instalar depósito, filtro, bombas y red de distribución; comprobar fugas y caudal."],
-  ["03", "Energizar", "Montar el panel, controlador, batería elevada, fusibles y convertidor DC–DC."],
-  ["04", "Conectar", "Fijar ESP32, sensores capacitivos, MOSFET, pantalla e indicadores en caja protegida."],
-  ["05", "Programar", "Cargar el firmware, configurar umbrales, tiempos y panel de monitoreo local."],
-  ["06", "Validar", "Calibrar cada sustrato y ensayar suelo seco, nivel bajo y riego secuencial."],
+  ["01", "Preparación estructural", "Construir y nivelar la cama de 2,00 × 1,00 m, colocar divisiones, revestimiento, drenaje y soportes externos."],
+  ["02", "Montaje hidráulico", "Instalar tanque, válvula manual, filtro, retención, bomba, medición, colector, electroválvulas y líneas por zona."],
+  ["03", "Sistema solar", "Fijar panel, controlador y batería elevada; comprobar polaridad, fusibles y tensión antes de conectar las cargas."],
+  ["04", "Automatización", "Montar ESP32, ADC, reloj, registro, drivers, pantalla y borneras dentro del gabinete seco."],
+  ["05", "Sensores y actuadores", "Instalar sondas a profundidad radicular, flotadores, caudal y presión; conectar bomba y válvulas con protección inductiva."],
+  ["06", "Programación", "Cargar el firmware, configurar Wi‑Fi, umbrales, tiempos máximos, estabilización y credenciales seguras del servicio web."],
+  ["07", "Calibración", "Registrar valores de suelo seco, humedad de campo y saturación para transformar lecturas en porcentajes útiles por zona."],
+  ["08", "Pruebas de aceptación", "Verificar fugas, corte por tanque bajo, ausencia de caudal, sobrepresión, reinicio, modo sin internet y parada de emergencia."],
 ];
 
-function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 12h13M13 6l6 6-6 6" />
-    </svg>
-  );
-}
+const categories: Array<"Todos" | Category> = ["Todos", "Energía", "Control", "Sensores", "Hidráulica", "Estructura"];
 
-function DownloadIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" />
-    </svg>
-  );
+function Arrow() {
+  return <span aria-hidden="true" className="arrow">→</span>;
 }
 
 export default function Home() {
   const [zones, setZones] = useState(initialZones);
-  const [irrigating, setIrrigating] = useState<string | null>(null);
-  const [tankOk, setTankOk] = useState(true);
-  const [log, setLog] = useState("Lecturas actualizadas · listo para decidir");
-  const [area, setArea] = useState(12);
-  const [activeImage, setActiveImage] = useState<(typeof gallery)[number] | null>(null);
+  const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>("Todos");
+  const [query, setQuery] = useState("");
+  const [selectedComponent, setSelectedComponent] = useState<Component | null>(null);
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tankLevel, setTankLevel] = useState(78);
+  const [battery, setBattery] = useState(86);
+  const [mode, setMode] = useState<"AUTO" | "MANUAL">("AUTO");
+  const [irrigating, setIrrigating] = useState<Zone["id"] | null>(null);
+  const [eventLog, setEventLog] = useState("Sistema verificado. Monitoreo autónomo activo.");
+  const [clock, setClock] = useState("");
+  const [area, setArea] = useState(200);
 
-  const priority = useMemo(() => {
-    if (!tankOk) return null;
-    return [...zones]
-      .filter((zone) => zone.humidity < zone.threshold)
-      .sort(
-        (a, b) =>
-          b.threshold - b.humidity - (a.threshold - a.humidity),
-      )[0] ?? null;
-  }, [zones, tankOk]);
+  useEffect(() => {
+    const update = () => setClock(new Intl.DateTimeFormat("es-EC", { hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date()));
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
-  const updateHumidity = (id: Zone["id"], humidity: number) => {
-    setZones((current) =>
-      current.map((zone) => (zone.id === id ? { ...zone, humidity } : zone)),
-    );
-    setLog(`Sensor de zona ${id} actualizado a ${humidity}%`);
-  };
+  const averageHumidity = Math.round(zones.reduce((sum, zone) => sum + zone.humidity, 0) / zones.length);
+  const priority = useMemo(() => [...zones].filter((zone) => zone.humidity < zone.threshold).sort((a, b) => (b.threshold - b.humidity) - (a.threshold - a.humidity))[0] ?? null, [zones]);
+  const filteredComponents = useMemo(() => components.filter((component) => {
+    const categoryMatch = activeCategory === "Todos" || component.category === activeCategory;
+    const haystack = `${component.name} ${component.description} ${component.function}`.toLowerCase();
+    return categoryMatch && haystack.includes(query.trim().toLowerCase());
+  }), [activeCategory, query]);
 
-  const runCycle = () => {
-    if (irrigating) return;
-    if (!tankOk) {
-      setLog("Protección activa: nivel del tanque insuficiente");
+  const runCycle = (manualZone?: Zone["id"]) => {
+    if (irrigating || tankLevel < 15) {
+      if (tankLevel < 15) setEventLog("Protección activa: nivel de tanque insuficiente.");
       return;
     }
-    if (!priority) {
-      setLog("Ciclo completado: todas las zonas están sobre su umbral");
+    const target = manualZone ? zones.find((zone) => zone.id === manualZone) : priority;
+    if (!target) {
+      setEventLog("Lecturas estables: ninguna zona requiere riego.");
       return;
     }
-    const target = priority;
     setIrrigating(target.id);
-    setLog(`Riego activado en zona ${target.id} · ${target.crop}`);
+    setEventLog(`Zona ${target.id} · ${target.crop}: válvula abierta, verificando caudal.`);
     window.setTimeout(() => {
-      setZones((current) =>
-        current.map((zone) =>
-          zone.id === target.id
-            ? { ...zone, humidity: Math.min(100, zone.humidity + 10) }
-            : zone,
-        ),
-      );
+      setZones((current) => current.map((zone) => zone.id === target.id ? { ...zone, humidity: Math.min(90, zone.humidity + 8) } : zone));
+      setTankLevel((level) => Math.max(0, level - 2));
+      setBattery((level) => Math.max(0, level - 1));
       setIrrigating(null);
-      setLog(`Pulso finalizado · zona ${target.id} entra en estabilización`);
-    }, 1350);
+      setEventLog(`Pulso completado en zona ${target.id}. Periodo de estabilización iniciado.`);
+    }, 1600);
   };
 
-  const simulateDrySoil = () => {
-    setZones([
-      { ...initialZones[0], humidity: 28 },
-      { ...initialZones[1], humidity: 43 },
-      { ...initialZones[2], humidity: 31 },
-    ]);
-    setLog("Escenario seco cargado · la prioridad ha sido recalculada");
+  const dryScenario = () => {
+    setZones(initialZones.map((zone, index) => ({ ...zone, humidity: [29, 41, 33][index] })));
+    setEventLog("Escenario de suelo seco cargado. Prioridad recalculada.");
   };
 
-  const resetSimulation = () => {
-    setZones(initialZones);
-    setTankOk(true);
-    setIrrigating(null);
-    setLog("Simulación restablecida");
-  };
-
-  const sectors = Math.max(3, Math.ceil(area * 3));
-  const sensorPoints = Math.max(3, Math.ceil(area * 2));
-  const solarStations = Math.max(1, Math.ceil(area / 15));
+  const projectedSectors = Math.ceil(area / 2.5);
+  const projectedNodes = Math.max(3, Math.ceil(area / 2.5));
+  const projectedWater = Math.round(area * 55.6);
 
   return (
     <main>
       <header className="site-header">
         <a className="brand" href="#inicio" aria-label="Ir al inicio">
-          <span className="brand-mark">
-            <img src="/logo-institucion.jpeg" alt="Logotipo de la Unidad Educativa Fiscal Samborondón" />
-          </span>
-          <span className="brand-copy">
-            <strong>Unidad Educativa</strong>
-            <span>Fiscal Samborondón</span>
-          </span>
+          <img src="/logo-institucion.jpeg" alt="Logotipo de la Unidad Educativa Fiscal Samborondón" />
+          <span><small>Unidad Educativa Fiscal</small><strong>Samborondón</strong></span>
         </a>
-        <button
-          className="menu-button"
-          type="button"
-          aria-label="Abrir menú"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span />
-          <span />
-        </button>
-        <nav className={menuOpen ? "nav-open" : ""} aria-label="Navegación principal">
-          <a href="#proyecto" onClick={() => setMenuOpen(false)}>Proyecto</a>
-          <a href="#simulador" onClick={() => setMenuOpen(false)}>Simulador</a>
-          <a href="#vision" onClick={() => setMenuOpen(false)}>Visión agrícola</a>
+        <button className="menu-toggle" type="button" aria-label="Abrir navegación" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><i /><i /></button>
+        <nav className={menuOpen ? "open" : ""} aria-label="Navegación principal">
+          <a href="#proyecto" onClick={() => setMenuOpen(false)}>El proyecto</a>
+          <a href="#componentes" onClick={() => setMenuOpen(false)}>Componentes</a>
+          <a href="#monitoreo" onClick={() => setMenuOpen(false)}>Monitoreo</a>
+          <a href="#arquitectura" onClick={() => setMenuOpen(false)}>Sistema</a>
+          <a href="#instalacion" onClick={() => setMenuOpen(false)}>Instalación</a>
           <a href="#galeria" onClick={() => setMenuOpen(false)}>Galería</a>
-          <a className="nav-cta" href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>
-            Informe <DownloadIcon />
-          </a>
+          <a className="nav-button" href="#monitoreo">Dashboard <Arrow /></a>
         </nav>
       </header>
 
       <section className="hero" id="inicio">
-        <img className="hero-image" src="/proyecto-frontal.png" alt="Prototipo final del Sistema de Riego Inteligente" />
-        <div className="hero-overlay" />
-        <div className="hero-grain" />
-        <div className="container hero-content">
+        <img className="hero-photo" src="/01-maqueta-completa.png" alt="Sistema de Riego Inteligente instalado y funcionando" />
+        <div className="hero-wash" />
+        <div className="container hero-layout">
           <div className="hero-copy">
-            <p className="eyebrow light"><span /> Proyecto institucional · 2026</p>
-            <h1><span>Sistema de Riego</span> Inteligente</h1>
-            <p className="hero-lead">
-              Agricultura de precisión que observa, decide y actúa. Un prototipo solar de tres microzonas diseñado para crecer hacia plantaciones agrícolas reales.
-            </p>
+            <p className="kicker"><span /> Proyecto STEAM · Agricultura de precisión</p>
+            <h1><span>Sistema de</span> Riego Inteligente</h1>
+            <p className="hero-subtitle">Tecnología autónoma, sostenible y conectada para optimizar el uso del agua, monitorear cultivos y tomar decisiones de riego en tiempo real.</p>
             <div className="hero-actions">
-              <a className="button primary" href="#simulador">Explorar el sistema <ArrowIcon /></a>
-              <a className="button ghost" href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>
-                Descargar informe <DownloadIcon />
-              </a>
+              <a className="button primary" href="#proyecto">Explorar proyecto <Arrow /></a>
+              <a className="button secondary" href="#monitoreo">Ver en tiempo real <span aria-hidden="true">↗</span></a>
             </div>
+            <div className="connected"><i /><span><strong>Sistema conectado</strong>Todos los módulos operan correctamente</span></div>
           </div>
-          <div className="hero-console" aria-label="Resumen operativo del prototipo">
-            <div className="console-top">
-              <span className="live-dot" />
-              <span>Sistema preparado</span>
-              <small>Modo demostración</small>
-            </div>
-            <div className="console-grid">
-              <div><strong>3</strong><span>microzonas</span></div>
-              <div><strong>2 m²</strong><span>área piloto</span></div>
-              <div><strong>Solar</strong><span>energía primaria</span></div>
-            </div>
-            <div className="console-line"><span style={{ width: "82%" }} /></div>
-            <p>Control por humedad · prioridad hídrica · estabilización</p>
+          <div className="hero-side-card">
+            <span className="live-pill"><i /> Operación autónoma</span>
+            <strong>{clock || "08:30:00"}</strong>
+            <small>Hora del controlador</small>
+            <div className="mini-bars"><i style={{ height: "52%" }} /><i style={{ height: "68%" }} /><i style={{ height: "78%" }} /><i style={{ height: "64%" }} /><i style={{ height: "88%" }} /><i style={{ height: "74%" }} /></div>
           </div>
         </div>
-        <a className="scroll-cue" href="#proyecto" aria-label="Continuar al proyecto"><span /> Descubrir</a>
-      </section>
-
-      <div className="signal-strip" aria-hidden="true">
-        <div>
-          <span>Medir</span><i />
-          <span>Interpretar</span><i />
-          <span>Priorizar</span><i />
-          <span>Regar</span><i />
-          <span>Aprender</span><i />
-          <span>Escalar</span>
-        </div>
-      </div>
-
-      <section className="section overview" id="proyecto">
-        <div className="container">
-          <div className="section-intro split-intro">
-            <div>
-              <p className="eyebrow"><span /> Una plataforma, no solo una maqueta</p>
-              <h2>Precisión en pequeño.<br /><em>Impacto en grande.</em></h2>
-            </div>
-            <div className="intro-copy">
-              <p>
-                El proyecto convierte diferencias reales del suelo en decisiones observables. Cada cultivo tiene su sensor, su umbral y su canal de riego; el ESP32 coordina la respuesta sin bloquear el monitoreo.
-              </p>
-              <p>
-                La escala de 1 × 2 metros permite validar con seguridad la arquitectura antes de llevarla a sectores hidráulicos de una plantación.
-              </p>
-            </div>
-          </div>
-
-          <div className="principles-grid">
-            <article className="principle featured">
-              <span className="principle-number">01</span>
-              <div className="water-rings"><span /><span /><span /></div>
-              <h3>Decidir con datos</h3>
-              <p>El riego ocurre cuando la humedad calibrada cae bajo el umbral configurado para cada cultivo.</p>
-            </article>
-            <article className="principle">
-              <span className="principle-number">02</span>
-              <div className="mini-icon sun-icon" aria-hidden="true">☼</div>
-              <h3>Operar con energía solar</h3>
-              <p>Panel, controlador y batería alimentan una ruta DC protegida; el inversor queda como apoyo auxiliar.</p>
-            </article>
-            <article className="principle">
-              <span className="principle-number">03</span>
-              <div className="mini-icon" aria-hidden="true">⌁</div>
-              <h3>Escalar por sectores</h3>
-              <p>La lógica de tres microzonas evoluciona hacia válvulas, estaciones remotas y puntos de medición representativos.</p>
-            </article>
+        <div className="hero-monitor">
+          <div className="container metrics-grid">
+            <article><span>Humedad promedio</span><strong>{averageHumidity}%</strong><small>Lectura óptima</small></article>
+            <article><span>Temperatura ambiente</span><strong>28.4 °C</strong><small>Condición normal</small></article>
+            <article><span>Nivel del tanque</span><strong>{tankLevel}%</strong><small>Reserva disponible</small></article>
+            <article><span>Caudal actual</span><strong>{irrigating ? "3.2" : "0.0"} L/min</strong><small>{irrigating ? "Flujo confirmado" : "En espera"}</small></article>
+            <article><span>Energía del sistema</span><strong>{battery}%</strong><small>Autonomía solar</small></article>
           </div>
         </div>
       </section>
 
-      <section className="section simulator-section" id="simulador">
-        <div className="container">
-          <div className="section-intro simulator-heading">
-            <div>
-              <p className="eyebrow gold"><span /> Simulación interactiva</p>
-              <h2>Así piensa el sistema.</h2>
-            </div>
-            <p>Mueva la humedad de cada cultivo y ejecute un ciclo. El controlador prioriza el mayor déficit, activa una sola zona y luego inicia la estabilización.</p>
-          </div>
+      <section className="impact-strip" aria-label="Beneficios principales">
+        <div className="container"><p><b>Innovación, tecnología y sostenibilidad</b> al servicio de la educación y el campo.</p><div><span><strong>3</strong> zonas inteligentes</span><span><strong>100%</strong> control autónomo</span><span><strong>24/7</strong> supervisión local</span></div></div>
+      </section>
 
-          <div className="simulator-shell">
-            <div className="simulator-toolbar">
-              <div>
-                <span className={`status-beacon ${tankOk ? "online" : "offline"}`} />
-                <div>
-                  <small>Estado del controlador</small>
-                  <strong>{!tankOk ? "Pausa protegida" : irrigating ? `Regando zona ${irrigating}` : priority ? `Prioridad: zona ${priority.id}` : "Humedad estable"}</strong>
-                </div>
-              </div>
-              <button className={`tank-switch ${tankOk ? "on" : ""}`} type="button" onClick={() => setTankOk((ok) => !ok)} aria-pressed={tankOk}>
-                <span /> Tanque {tankOk ? "disponible" : "bajo"}
+      <section className="section project-section" id="proyecto">
+        <div className="container">
+          <div className="section-heading split">
+            <div><p className="eyebrow">El proyecto</p><h2>Un laboratorio agrícola<br /><em>completo y verificable.</em></h2></div>
+            <div><p>La maqueta de <b>1 metro de ancho por 2 metros de largo</b> integra tres cultivos, energía solar, sensores resistentes, actuación hidráulica y una aplicación web. Su controlador continúa trabajando aunque no exista conexión a internet.</p><a className="text-link" href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>Descargar informe general <Arrow /></a></div>
+          </div>
+          <div className="project-grid">
+            <article className="project-image-card"><img src="/01-maqueta-completa.png" alt="Vista completa del prototipo" /><div><span>Dimensiones reales</span><strong>2,00 × 1,00 m</strong></div></article>
+            <div className="project-points">
+              <article><span>01</span><h3>Medir</h3><p>Humedad y temperatura por cultivo, nivel de tanque, caudal, presión, energía y ambiente.</p></article>
+              <article><span>02</span><h3>Decidir</h3><p>El ESP32 compara umbrales, identifica prioridad y valida condiciones seguras.</p></article>
+              <article><span>03</span><h3>Actuar</h3><p>Una bomba alimenta tres válvulas independientes y seis microaspersores regulables.</p></article>
+              <article><span>04</span><h3>Documentar</h3><p>Cada lectura, orden, alarma y volumen queda disponible localmente y en la web.</p></article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section components-section" id="componentes">
+        <div className="container">
+          <div className="section-heading centered light"><p className="eyebrow">Inventario técnico</p><h2>Cada componente tiene<br /><em>una función precisa.</em></h2><p>Explore el sistema por categorías, consulte su especificación y comprenda su papel dentro de la maqueta.</p></div>
+          <div className="component-toolbar">
+            <div className="category-tabs" role="tablist" aria-label="Categorías de componentes">{categories.map((category) => <button key={category} type="button" className={activeCategory === category ? "active" : ""} onClick={() => setActiveCategory(category)}>{category}</button>)}</div>
+            <label className="component-search"><span>Buscar</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ej. sensor, bomba, batería…" /></label>
+          </div>
+          <div className="component-feature">
+            <div><span>{activeCategory === "Todos" ? "Sistema completo" : activeCategory}</span><strong>{filteredComponents.length}</strong><small>componentes y accesorios</small></div>
+            <img src={activeCategory === "Todos" ? "/02-arquitectura-principal.png" : categoryImages[activeCategory]} alt={`Vista de ${activeCategory === "Todos" ? "la arquitectura completa" : activeCategory}`} />
+          </div>
+          <div className="components-grid">
+            {filteredComponents.map((component, index) => (
+              <button className="component-card" type="button" key={component.name} onClick={() => setSelectedComponent(component)}>
+                <span className="component-index">{String(index + 1).padStart(2, "0")}</span>
+                <small>{component.category} · {component.quantity}</small>
+                <h3>{component.name}</h3>
+                <p>{component.description}</p>
+                <div><span>{component.spec}</span><b>Ver función <Arrow /></b></div>
               </button>
-            </div>
+            ))}
+          </div>
+          {filteredComponents.length === 0 && <p className="empty-state">No hay coincidencias. Pruebe otra palabra o categoría.</p>}
+        </div>
+      </section>
 
+      <section className="section dashboard-section" id="monitoreo">
+        <div className="container">
+          <div className="section-heading split light">
+            <div><p className="eyebrow">Monitoreo interactivo</p><h2>Observe cómo decide<br /><em>el sistema.</em></h2></div>
+            <p>Modifique la humedad, simule suelo seco o ejecute un ciclo. En modo automático se atiende primero la zona con mayor déficit respecto a su umbral.</p>
+          </div>
+          <div className="dashboard-shell">
+            <div className="dashboard-top">
+              <div><i className={tankLevel < 15 ? "alarm" : ""} /><span><small>Estado</small><strong>{tankLevel < 15 ? "Protección por nivel bajo" : irrigating ? `Regando zona ${irrigating}` : priority ? `Prioridad zona ${priority.id}` : "Variables estables"}</strong></span></div>
+              <div className="mode-switch" aria-label="Modo de operación"><button type="button" className={mode === "AUTO" ? "active" : ""} onClick={() => setMode("AUTO")}>AUTO</button><button type="button" className={mode === "MANUAL" ? "active" : ""} onClick={() => setMode("MANUAL")}>MANUAL</button></div>
+            </div>
             <div className="zones-grid">
               {zones.map((zone) => {
-                const needsWater = zone.humidity < zone.threshold;
-                const isActive = irrigating === zone.id;
-                return (
-                  <article className={`zone-card ${isActive ? "is-watering" : ""}`} key={zone.id} style={{ "--zone-tone": zone.tone } as React.CSSProperties}>
-                    <div className="zone-top">
-                      <span>Zona {zone.id}</span>
-                      <small>{isActive ? "Riego activo" : needsWater ? "Bajo umbral" : "Humedad estable"}</small>
-                    </div>
-                    <h3>{zone.crop}</h3>
-                    <div className="humidity-readout"><strong>{zone.humidity}</strong><span>%</span></div>
-                    <div className="moisture-track" aria-hidden="true">
-                      <span className="threshold-mark" style={{ left: `${zone.threshold}%` }} />
-                      <i style={{ width: `${zone.humidity}%` }} />
-                    </div>
-                    <div className="range-labels"><span>Seco</span><span>Umbral {zone.threshold}%</span><span>Húmedo</span></div>
-                    <label>
-                      Ajustar lectura de humedad
-                      <input
-                        type="range"
-                        min="10"
-                        max="90"
-                        value={zone.humidity}
-                        aria-label={`Humedad de ${zone.crop}`}
-                        onChange={(event) => updateHumidity(zone.id, Number(event.target.value))}
-                      />
-                    </label>
-                    {isActive && <div className="water-pulse"><span /><span /><span /></div>}
-                  </article>
-                );
+                const deficit = zone.threshold - zone.humidity;
+                return <article className={`zone-card ${irrigating === zone.id ? "watering" : ""}`} key={zone.id} style={{ "--zone": zone.color } as React.CSSProperties}>
+                  <div className="zone-head"><span>Zona {zone.id}</span><i>{irrigating === zone.id ? "Riego activo" : deficit > 0 ? `Déficit ${deficit}%` : "Estable"}</i></div>
+                  <h3>{zone.crop}</h3>
+                  <div className="zone-reading"><strong>{zone.humidity}</strong><span>%<small>humedad</small></span></div>
+                  <div className="moisture-bar"><i style={{ width: `${zone.humidity}%` }} /><b style={{ left: `${zone.threshold}%` }} /></div>
+                  <div className="bar-legend"><span>Seco</span><span>Umbral {zone.threshold}%</span><span>Húmedo</span></div>
+                  <label>Ajustar lectura<input type="range" min="15" max="85" value={zone.humidity} onChange={(event) => setZones((current) => current.map((item) => item.id === zone.id ? { ...item, humidity: Number(event.target.value) } : item))} /></label>
+                  <div className="zone-meta"><span>Suelo <b>{zone.temperature} °C</b></span><span>Válvula <b>{irrigating === zone.id ? "Abierta" : "Cerrada"}</b></span></div>
+                  {mode === "MANUAL" && <button className="manual-button" type="button" disabled={Boolean(irrigating)} onClick={() => runCycle(zone.id)}>Regar zona {zone.id}</button>}
+                  {irrigating === zone.id && <div className="rain-animation"><i /><i /><i /><i /></div>}
+                </article>;
               })}
             </div>
-
-            <div className="decision-panel">
-              <div className="decision-copy">
-                <small>Registro del último evento</small>
-                <p>{log}</p>
-              </div>
-              <div className="simulator-actions">
-                <button type="button" className="text-button" onClick={simulateDrySoil}>Simular sequía</button>
-                <button type="button" className="text-button" onClick={resetSimulation}>Restablecer</button>
-                <button type="button" className="button primary dark" onClick={runCycle} disabled={Boolean(irrigating)}>
-                  {irrigating ? "Aplicando pulso…" : "Ejecutar ciclo"} <ArrowIcon />
-                </button>
-              </div>
-            </div>
+            <div className="dashboard-actions"><div><small>Registro operativo</small><p>{eventLog}</p></div><div><button type="button" onClick={dryScenario}>Simular suelo seco</button><button type="button" onClick={() => { setZones(initialZones); setTankLevel(78); setBattery(86); setEventLog("Simulación restablecida."); }}>Restablecer</button>{mode === "AUTO" && <button className="button primary" type="button" disabled={Boolean(irrigating)} onClick={() => runCycle()}>Ejecutar ciclo <Arrow /></button>}</div></div>
           </div>
-          <p className="simulator-note">Simulación educativa. Los umbrales y tiempos reales deben calibrarse con el sustrato, el cultivo y el caudal instalados.</p>
+          <p className="educational-note">Simulación educativa: los valores reales se determinan mediante calibración del suelo, pruebas de caudal y criterios agronómicos.</p>
         </div>
       </section>
 
-      <section className="section architecture-section">
+      <section className="section architecture-section" id="arquitectura">
         <div className="container">
-          <div className="section-intro centered">
-            <p className="eyebrow"><span /> Arquitectura funcional</p>
-            <h2>De la radiación solar<br />a una decisión agrícola.</h2>
-          </div>
-          <div className="flow-grid">
-            {[
-              ["01", "Energía", "Panel solar", "Genera y almacena energía en una estación elevada y protegida."],
-              ["02", "Medición", "Sensores capacitivos", "Convierten el estado del suelo en lecturas calibrables por zona."],
-              ["03", "Decisión", "Controlador ESP32", "Compara umbrales, calcula prioridad y mantiene la lógica no bloqueante."],
-              ["04", "Actuación", "Canales independientes", "MOSFET y bombas aplican el pulso solo donde existe demanda."],
-              ["05", "Evidencia", "Panel de monitoreo", "Muestra estados, eventos y datos para validar el impacto real."],
-            ].map((item, index) => (
-              <article className="flow-card" key={item[0]}>
-                <div className="flow-number">{item[0]}</div>
-                <span>{item[1]}</span>
-                <h3>{item[2]}</h3>
-                <p>{item[3]}</p>
-                {index < 4 && <i className="flow-arrow">→</i>}
-              </article>
-            ))}
-          </div>
-          <div className="energy-note">
-            <div className="energy-orbit" aria-hidden="true"><span>DC</span></div>
-            <div>
-              <p className="eyebrow gold"><span /> Decisión energética recomendada</p>
-              <h3>La eficiencia empieza en corriente continua.</h3>
-              <p>Bombas de 12 V y un convertidor de 5 V para el ESP32 conforman la ruta principal. El inversor del kit se reserva para cargas auxiliares de corriente alterna.</p>
-            </div>
+          <div className="section-heading split"><div><p className="eyebrow">Arquitectura principal</p><h2>Agua, energía y datos<br /><em>trabajando juntos.</em></h2></div><p>La arquitectura separa físicamente la ruta hidráulica, la potencia de 12 V, la electrónica de 5 V y las comunicaciones. El control local conserva la autonomía cuando la red no está disponible.</p></div>
+          <button className="architecture-image" type="button" onClick={() => setGalleryIndex(1)} aria-label="Ampliar arquitectura principal"><img src="/02-arquitectura-principal.png" alt="Arquitectura principal del Sistema de Riego Inteligente" /><span>Ampliar arquitectura <Arrow /></span></button>
+          <div className="architecture-cards">
+            <article><span>01</span><h3>Energía solar</h3><p>Panel → controlador → batería → distribución DC protegida.</p></article>
+            <article><span>02</span><h3>Control local</h3><p>ESP32, ADC, reloj, registro y lógica autónoma no bloqueante.</p></article>
+            <article><span>03</span><h3>Instrumentación</h3><p>Suelo, ambiente, nivel, caudal, presión y consumo eléctrico.</p></article>
+            <article><span>04</span><h3>Actuación</h3><p>Bomba única, colector y tres electroválvulas normalmente cerradas.</p></article>
+            <article><span>05</span><h3>Supervisión web</h3><p>Telemetría, alarmas, historial y comandos autenticados.</p></article>
           </div>
         </div>
       </section>
 
-      <section className="section macro-section" id="vision">
-        <div className="container macro-grid">
-          <div className="macro-copy">
-            <p className="eyebrow light"><span /> Visión macro</p>
-            <h2>Una lógica que crece con el territorio.</h2>
-            <p>En campo, cada microzona se convierte en un sector hidráulico definido por cultivo, suelo, pendiente y exposición. La arquitectura suma nodos sin perder la lógica central: medir, priorizar, actuar y documentar.</p>
-            <div className="scale-control">
-              <div><label htmlFor="area-slider">Área conceptual de plantación</label><strong>{area} ha</strong></div>
-              <input id="area-slider" type="range" min="1" max="60" value={area} onChange={(event) => setArea(Number(event.target.value))} />
-              <div className="scale-labels"><span>1 ha</span><span>30 ha</span><span>60 ha</span></div>
-            </div>
-            <p className="concept-note">Estimación conceptual para visualizar escalabilidad; el diseño definitivo depende de hidráulica, topografía, cultivos y ensayos de campo.</p>
-          </div>
-          <div className="field-console">
-            <div className="field-head">
-              <div><span className="live-dot" /> Modelo de expansión</div>
-              <small>Arquitectura modular</small>
-            </div>
-            <div className="field-map" aria-label={`Mapa conceptual para ${area} hectáreas`}>
-              {Array.from({ length: 24 }).map((_, index) => (
-                <span key={index} className={index < Math.min(24, Math.ceil(area / 2.5)) ? "active" : ""} style={{ animationDelay: `${index * 35}ms` }} />
-              ))}
-              <div className="field-node node-a">A</div>
-              <div className="field-node node-b">B</div>
-              <div className="field-node node-c">C</div>
-            </div>
-            <div className="field-stats">
-              <div><strong>{sectors}</strong><span>sectores estimados</span></div>
-              <div><strong>{sensorPoints}</strong><span>puntos de sensado</span></div>
-              <div><strong>{solarStations}</strong><span>estaciones solares</span></div>
-            </div>
-          </div>
-        </div>
+      <section className="connections-section">
+        <article><img src="/07-conexion-electrica.png" alt="Conexión eléctrica completa" /><div><p className="eyebrow">Conexión eléctrica</p><h2>Potencia protegida.<br />Señales ordenadas.</h2><p>Fusibles, borneras, canaletas y gabinete seco mantienen una instalación inspeccionable.</p><button type="button" onClick={() => setGalleryIndex(6)}>Ver detalle <Arrow /></button></div></article>
+        <article><img src="/08-conexion-hidraulica.png" alt="Conexión hidráulica completa" /><div><p className="eyebrow">Conexión hidráulica</p><h2>Tres zonas.<br />Una red controlada.</h2><p>Filtro, bomba, instrumentos y válvulas convierten cada orden en un volumen verificable.</p><button type="button" onClick={() => setGalleryIndex(7)}>Ver detalle <Arrow /></button></div></article>
       </section>
 
-      <section className="section installation-section">
+      <section className="section installation-section" id="instalacion">
         <div className="container">
-          <div className="section-intro split-intro">
-            <div>
-              <p className="eyebrow"><span /> Puesta en marcha</p>
-              <h2>Seis fases.<br /><em>Un sistema verificable.</em></h2>
-            </div>
-            <p className="intro-copy single">La instalación separa agua, potencia y señales. Cada fase termina con una comprobación concreta antes de avanzar a la siguiente.</p>
+          <div className="section-heading split"><div><p className="eyebrow">Puesta en marcha</p><h2>De los materiales a<br /><em>la operación autónoma.</em></h2></div><p>La instalación se realiza por etapas. Cada una termina con una comprobación antes de energizar o incorporar el siguiente subsistema.</p></div>
+          <div className="installation-grid">
+            <img src="/09-estructura-seguridad.png" alt="Materiales de estructura, montaje y seguridad" />
+            <div>{installation.map(([number, title, description]) => <details key={number}><summary><span>{number}</span><strong>{title}</strong><i>+</i></summary><p>{description}</p></details>)}</div>
           </div>
-          <div className="installation-list">
-            {installation.map(([number, title, description]) => (
-              <details key={number}>
-                <summary><span>{number}</span><strong>{title}</strong><i>+</i></summary>
-                <p>{description}</p>
-              </details>
-            ))}
-          </div>
+        </div>
+      </section>
+
+      <section className="section remote-section">
+        <div className="container remote-grid"><div><p className="eyebrow">Control remoto</p><h2>La finca disponible<br /><em>en cualquier pantalla.</em></h2><p>La aplicación web responsiva presenta estados, tendencias, alarmas y comandos. El equipo de campo no se expone directamente a internet: intercambia mensajes seguros con el servicio central y conserva su lógica local.</p><ul><li>Panel adaptable a computador, tableta y teléfono.</li><li>Roles de propietario, administrador, operador y observador.</li><li>Historial de órdenes, confirmaciones y eventos de seguridad.</li><li>Operación local aunque la comunicación esté temporalmente caída.</li></ul><a className="button primary" href="#monitoreo">Probar dashboard <Arrow /></a></div><img src="/10-control-remoto-web.png" alt="Aplicación web de control remoto en laptop y teléfono" /></div>
+      </section>
+
+      <section className="section scale-section" id="escala">
+        <div className="container scale-grid">
+          <div><p className="eyebrow">Visión agrícola real</p><h2>Del prototipo a una<br /><em>finca de 200 hectáreas.</em></h2><p>La lógica se replica por sectores hidráulicos: nodos solares de campo, sensores representativos, electroválvulas industriales, comunicación LoRaWAN y una estación central de bombeo.</p><label className="area-control"><span>Área conceptual <strong>{area} ha</strong></span><input type="range" min="2" max="200" step="2" value={area} onChange={(event) => setArea(Number(event.target.value))} /><small><i>2 ha</i><i>100 ha</i><i>200 ha</i></small></label></div>
+          <div className="scale-console"><div className="field-pattern">{Array.from({ length: 40 }).map((_, index) => <i className={index < Math.ceil(area / 5) ? "active" : ""} key={index} />)}</div><div className="scale-stats"><article><strong>{projectedSectors}</strong><span>sectores de 2,5 ha</span></article><article><strong>{projectedNodes}</strong><span>nodos de campo</span></article><article><strong>{projectedWater.toLocaleString("es-EC")}</strong><span>m³/día estimados*</span></article></div><small>*Ejemplo conceptual con 5 mm/día y 90% de eficiencia. El diseño definitivo requiere estudio agronómico, hidráulico, topográfico y energético.</small></div>
         </div>
       </section>
 
       <section className="section gallery-section" id="galeria">
         <div className="container">
-          <div className="section-intro gallery-heading">
-            <div>
-              <p className="eyebrow light"><span /> Proyecto final</p>
-              <h2>Diseñado para enseñar.<br />Construido para funcionar.</h2>
-            </div>
-            <p>Visualizaciones coherentes con los componentes definidos: depósito protegido, control elevado, tres zonas y estación solar conectada.</p>
-          </div>
-          <div className="gallery-grid">
-            {gallery.map((image, index) => (
-              <button className={`gallery-card gallery-${index + 1}`} type="button" key={image.src} onClick={() => setActiveImage(image)}>
-                <img src={image.src} alt={image.alt} />
-                <span className="gallery-shade" />
-                <span className="gallery-label"><small>{image.eyebrow}</small><strong>{image.title}</strong></span>
-                <span className="gallery-plus">+</span>
-              </button>
-            ))}
-          </div>
+          <div className="section-heading split light"><div><p className="eyebrow">Galería técnica</p><h2>El proyecto desde<br /><em>cada perspectiva.</em></h2></div><p>Diez visualizaciones coherentes con el inventario, la arquitectura y la instalación propuesta.</p></div>
+          <div className="gallery-grid">{gallery.map(([src, label, title], index) => <button type="button" key={src} className={`gallery-card gallery-${index + 1}`} onClick={() => setGalleryIndex(index)}><img src={src} alt={title} /><span><small>{String(index + 1).padStart(2, "0")} · {label}</small><strong>{title}</strong><i>+</i></span></button>)}</div>
         </div>
       </section>
 
-      <section className="section validation-section">
-        <div className="container validation-grid">
-          <div>
-            <p className="eyebrow"><span /> Validación responsable</p>
-            <h2>El impacto se demuestra. No se presume.</h2>
-            <p>El proyecto registra evidencia antes de afirmar resultados: lecturas, litros aplicados, uniformidad, energía disponible, autonomía y respuesta de las plantas.</p>
-            <a className="inline-link" href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>Consultar metodología completa <ArrowIcon /></a>
-          </div>
-          <div className="validation-cards">
-            {[
-              ["01", "Sensores", "Orden lógico y lecturas estables entre suelo seco y húmedo."],
-              ["02", "Actuación", "Solo responde el canal seleccionado y se detiene con tanque bajo."],
-              ["03", "Uniformidad", "Volumen repetible medido por zona y por ciclo."],
-              ["04", "Autonomía", "Tensión, energía y duración registradas durante el ensayo."],
-            ].map((item) => (
-              <article key={item[0]}><span>{item[0]}</span><h3>{item[1]}</h3><p>{item[2]}</p></article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section className="institution-section"><div className="container institution-grid"><img src="/logo-institucion.jpeg" alt="Unidad Educativa Fiscal Samborondón" /><div><p className="eyebrow">Proyecto institucional</p><h2>Unidad Educativa Fiscal Samborondón</h2><p>Formamos estudiantes capaces de convertir ciencia, tecnología y conciencia ambiental en soluciones reales para su comunidad.</p></div><a className="button secondary" href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>Descargar informe <Arrow /></a></div></section>
 
-      <section className="institution-section">
-        <div className="institution-glow" />
-        <div className="container institution-content">
-          <img src="/logo-institucion.jpeg" alt="Logotipo oficial de la Unidad Educativa Fiscal Samborondón" />
-          <div>
-            <p className="eyebrow gold"><span /> Ciencia aplicada al territorio</p>
-            <h2>Unidad Educativa<br />Fiscal Samborondón</h2>
-            <p>Un proyecto que conecta educación tecnológica, sostenibilidad y vocación agrícola para convertir el aprendizaje en soluciones observables.</p>
-          </div>
-          <a className="button primary" href="#inicio">Volver al inicio <span>↑</span></a>
-        </div>
-      </section>
+      <footer><div className="container"><div><strong>Sistema de Riego Inteligente</strong><span>Unidad Educativa Fiscal Samborondón</span></div><p>Proyecto educativo de agricultura de precisión · Samborondón, Ecuador · 2026</p><a href="#inicio">Volver arriba ↑</a></div></footer>
 
-      <footer>
-        <div className="container footer-grid">
-          <div><strong>Sistema de Riego Inteligente</strong><span>Proyecto educativo de agricultura de precisión</span></div>
-          <p>Unidad Educativa Fiscal Samborondón · Samborondón, Ecuador · 2026</p>
-          <a href="/Informe_general_Sistema_de_Riego_Inteligente.docx" download>Descargar informe <DownloadIcon /></a>
-        </div>
-      </footer>
+      {selectedComponent && <div className="modal" role="dialog" aria-modal="true" aria-labelledby="component-title"><button className="modal-backdrop" type="button" aria-label="Cerrar" onClick={() => setSelectedComponent(null)} /><div className="component-modal"><button className="modal-close" type="button" aria-label="Cerrar ficha" onClick={() => setSelectedComponent(null)}>×</button><img src={selectedComponent.image} alt={`Componentes de ${selectedComponent.category}`} /><div><p className="eyebrow">{selectedComponent.category} · {selectedComponent.quantity}</p><h2 id="component-title">{selectedComponent.name}</h2><span className="spec-pill">{selectedComponent.spec}</span><h3>Descripción</h3><p>{selectedComponent.description}</p><h3>Función en el proyecto</h3><p>{selectedComponent.function}</p></div></div></div>}
 
-      {activeImage && (
-        <div className="lightbox" role="dialog" aria-modal="true" aria-label={activeImage.title}>
-          <button className="lightbox-backdrop" type="button" aria-label="Cerrar vista ampliada" onClick={() => setActiveImage(null)} />
-          <button className="lightbox-close" type="button" aria-label="Cerrar imagen" onClick={() => setActiveImage(null)}>×</button>
-          <div className="lightbox-panel">
-            <img src={activeImage.src} alt={activeImage.alt} />
-            <p><span>{activeImage.eyebrow}</span>{activeImage.title}</p>
-          </div>
-        </div>
-      )}
+      {galleryIndex !== null && <div className="lightbox" role="dialog" aria-modal="true" aria-label="Galería ampliada"><button className="modal-backdrop" type="button" aria-label="Cerrar galería" onClick={() => setGalleryIndex(null)} /><button className="modal-close" type="button" onClick={() => setGalleryIndex(null)} aria-label="Cerrar">×</button><button className="lightbox-nav previous" type="button" aria-label="Imagen anterior" onClick={() => setGalleryIndex((galleryIndex - 1 + gallery.length) % gallery.length)}>‹</button><figure><img src={gallery[galleryIndex][0]} alt={gallery[galleryIndex][2]} /><figcaption><span>{gallery[galleryIndex][1]}</span><strong>{gallery[galleryIndex][2]}</strong><small>{galleryIndex + 1} / {gallery.length}</small></figcaption></figure><button className="lightbox-nav next" type="button" aria-label="Imagen siguiente" onClick={() => setGalleryIndex((galleryIndex + 1) % gallery.length)}>›</button></div>}
     </main>
   );
 }
