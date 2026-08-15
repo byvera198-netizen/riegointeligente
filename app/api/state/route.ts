@@ -1,10 +1,13 @@
 import { desc, eq } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { auditEvents, commands, telemetry, zoneConfig, zoneReadings } from "../../../db/schema";
+import { getChatGPTUser } from "../../chatgpt-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const user = await getChatGPTUser();
+  if (!user) return Response.json({ error: "Se requiere una sesión autorizada." }, { status: 401 });
   try {
     const db = getDb();
     const [latest] = await db.select().from(telemetry).orderBy(desc(telemetry.id)).limit(1);

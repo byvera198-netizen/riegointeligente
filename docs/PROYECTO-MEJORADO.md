@@ -156,7 +156,7 @@ El aplicativo presenta:
 - Bitácora de acciones y resultado de cada comando.
 - Modo demostración cuando aún no se conecta el prototipo.
 
-El sitio debe desplegarse con acceso restringido para operadores. El endpoint del dispositivo requiere un token diferente a la sesión humana. En una instalación escolar permanente se recomienda alojar la API del dispositivo en un endpoint público HTTPS protegido, manteniendo el panel privado.
+La dirección HTTPS es accesible desde internet para que el ESP32 pueda transmitir, pero el panel exige inicio de sesión y las API de operación rechazan visitantes anónimos. El endpoint del dispositivo usa un token secreto diferente a la sesión humana. De este modo, la conectividad remota no vuelve pública la información del cultivo.
 
 ## 9. Seguridad física y lógica
 

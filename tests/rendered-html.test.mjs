@@ -6,7 +6,11 @@ async function render(path = "/") {
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
   return worker.fetch(
-    new Request(`http://localhost${path}`, { headers: { accept: "text/html" } }),
+    new Request(`http://localhost${path}`, { headers: {
+      accept: "text/html",
+      "oai-authenticated-user-id": "test-user",
+      "oai-authenticated-user-email": "pruebas@uefs.edu.ec",
+    } }),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
     { waitUntil() {}, passThroughOnException() {} },
   );
