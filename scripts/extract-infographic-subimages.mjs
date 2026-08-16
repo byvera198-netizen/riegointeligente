@@ -77,6 +77,47 @@ const groups = [
     ],
   },
   {
+    slug: "flujo-energia",
+    source: "flujo-energia.webp",
+    crops: [
+      ["1 Panel solar", 12, 88, 260, 350], ["2 Controlador de carga", 278, 88, 270, 350], ["3 Batería de 12 V", 554, 88, 270, 350], ["4 Seccionador y fusible", 830, 88, 270, 350], ["5 Barra de distribución", 1106, 88, 282, 350],
+      ["5A Ramal de bomba", 12, 442, 430, 350], ["5B Ramal de electroválvulas", 448, 442, 430, 350], ["5C Control ESP32 y sensores", 884, 442, 504, 350],
+    ],
+  },
+  {
+    slug: "flujo-informacion",
+    source: "flujo-informacion.webp",
+    crops: [
+      ["1 Sensores del sistema", 24, 93, 360, 340], ["2 Controlador ESP32", 389, 93, 270, 340], ["3 Decisión autónoma", 664, 93, 280, 340], ["4 Bomba y válvulas", 949, 93, 427, 340],
+      ["5 Comunicación HTTPS", 145, 438, 205, 205], ["6 API de telemetría", 385, 438, 205, 205], ["7 Base de datos", 625, 438, 205, 205], ["8 Aplicativo web", 865, 438, 270, 205],
+      ["9 Solicitud desde la web", 18, 650, 218, 205], ["10 Orden con vencimiento", 239, 650, 218, 205], ["11 API de control", 460, 650, 218, 205], ["12 Recepción en ESP32", 681, 650, 218, 205], ["13 Validación física", 902, 650, 218, 205], ["14 Ejecución o rechazo", 1123, 650, 253, 205],
+    ],
+  },
+  {
+    slug: "sistema-hidraulico",
+    source: "sistema-hidraulico-escalado.webp",
+    crops: [
+      ["Depósito y salida de agua", 0, 0, 395, 520], ["Bomba y medición de caudal", 205, 470, 410, 306], ["Controlador y electroválvulas", 555, 392, 395, 384],
+      ["Zona A de hortalizas", 650, 170, 360, 430], ["Zona B con microaspersión", 915, 170, 290, 430], ["Zona C con riego localizado", 1110, 170, 290, 430], ["Tubería principal y ramales", 470, 505, 860, 270],
+    ],
+  },
+  {
+    slug: "09-conexiones-principal",
+    source: "09-plano-conexiones-horizontal.webp",
+    crops: [
+      ["Sensores y señales de entrada", 8, 120, 310, 750], ["Controlador ESP32 y cableado", 304, 120, 500, 750], ["Actuadores y protecciones", 675, 120, 300, 750], ["Tabla de pines y funciones", 840, 120, 460, 750],
+      ["Dispositivos del bus I²C", 280, 810, 525, 215], ["Direcciones I²C esperadas", 805, 810, 495, 215], ["Buenas prácticas de conexión", 8, 1028, 640, 160], ["Recomendaciones de montaje", 650, 1028, 650, 160],
+    ],
+  },
+  {
+    slug: "09-conexiones-didactico",
+    source: "09-plano-conexiones-vertical.webp",
+    crops: [
+      ["Sensores digitales y analógicos", 8, 115, 185, 850], ["ESP32 y conexiones centrales", 195, 115, 350, 850], ["Bomba, válvulas y emergencia", 545, 115, 180, 850], ["Tabla didáctica de señales", 725, 115, 200, 850],
+      ["Módulos del bus I²C", 8, 965, 715, 250], ["Tabla de direcciones I²C", 8, 1218, 917, 165],
+    ],
+  },
+  {
     slug: "10-comunicaciones",
     source: "10-kit-comunicaciones.webp",
     crops: [

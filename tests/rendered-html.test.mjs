@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import test from "node:test";
 
 async function render(path = "/") {
@@ -92,9 +93,13 @@ test("integra las infografías en su contexto y muestra sus validaciones", async
 test("presenta subimágenes independientes y fotografías coherentes en el catálogo", async () => {
   const response = await render();
   const html = await response.text();
-  assert.match(html, /104 recortes independientes/);
-  assert.match(html, /Cada componente de las infografías, por separado/);
+  assert.match(html, /147 recortes independientes/);
+  assert.match(html, /Cada elemento de todas las infografías, por separado/);
+  assert.match(html, /subimage-open-button/);
+  assert.match(html, /Ver sus/);
   assert.match(html, /infografias\/subimagenes\/02-estructural\/01\.webp/);
+  assert.ok(existsSync(new URL("../public/infografias/subimagenes/flujo-energia/01.webp", import.meta.url)));
+  assert.ok(existsSync(new URL("../public/infografias/subimagenes/09-conexiones-principal/01.webp", import.meta.url)));
   assert.match(html, /materiales\/panel-solar-150w\.webp/);
   assert.match(html, /materiales\/esp32-devkit\.webp/);
 });

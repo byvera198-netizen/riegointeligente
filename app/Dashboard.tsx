@@ -39,6 +39,7 @@ type VisualItem = {
   caption: string;
   status?: string;
   tone?: "valid" | "note" | "scale";
+  subimageSlug?: string;
 };
 
 const navItems = [
@@ -79,20 +80,20 @@ const gallery: VisualItem[] = [
 ];
 
 const architectureInfographics: VisualItem[] = [
-  { src: assetPath("infografias/flujo-energia.webp"), title: "Flujo de energía y alimentación", caption: "La secuencia panel → controlador → batería → protección → distribución es correcta. La batería de 7 Ah dibujada es ilustrativa; la especificación oficial del proyecto es AGM de 12 V y 55 Ah.", status: "Validada con corrección", tone: "note" },
-  { src: assetPath("infografias/flujo-informacion.webp"), title: "Flujo de información y control seguro", caption: "Representa correctamente la medición local, decisión autónoma, actuación, telemetría HTTPS y órdenes remotas con vencimiento y validación física.", status: "Coherente con el diseño", tone: "valid" },
-  { src: assetPath("infografias/sistema-hidraulico-escalado.webp"), title: "Referencia de ampliación hidráulica", caption: "Muestra cómo escalar el concepto a un huerto mayor. No corresponde a la lista de compra del prototipo: ilustra 2.000 L, tubería de 25 mm y 12 L/min; la versión escolar utiliza 40–60 L, PE de 16 mm, 3–5 L/min y tomate, lechuga y pimiento.", status: "Referencia de escala", tone: "scale" },
+  { src: assetPath("infografias/flujo-energia.webp"), title: "Flujo de energía y alimentación", caption: "La secuencia panel → controlador → batería → protección → distribución es correcta. La batería de 7 Ah dibujada es ilustrativa; la especificación oficial del proyecto es AGM de 12 V y 55 Ah.", status: "Validada con corrección", tone: "note", subimageSlug: "flujo-energia" },
+  { src: assetPath("infografias/flujo-informacion.webp"), title: "Flujo de información y control seguro", caption: "Representa correctamente la medición local, decisión autónoma, actuación, telemetría HTTPS y órdenes remotas con vencimiento y validación física.", status: "Coherente con el diseño", tone: "valid", subimageSlug: "flujo-informacion" },
+  { src: assetPath("infografias/sistema-hidraulico-escalado.webp"), title: "Referencia de ampliación hidráulica", caption: "Muestra cómo escalar el concepto a un huerto mayor. No corresponde a la lista de compra del prototipo: ilustra 2.000 L, tubería de 25 mm y 12 L/min; la versión escolar utiliza 40–60 L, PE de 16 mm, 3–5 L/min y tomate, lechuga y pimiento.", status: "Referencia de escala", tone: "scale", subimageSlug: "sistema-hidraulico" },
 ];
 
 const kitInfographics: VisualItem[] = [
-  { src: assetPath("infografias/02-kit-estructural.webp"), title: "2. Kit estructural y cama agrícola", caption: "Bastidor, fijaciones, impermeabilización, drenaje, divisores, sustrato y soportes. Coincide con la cama demostrativa de 2 × 1 m.", status: "Validada", tone: "valid" },
-  { src: assetPath("infografias/03-kit-hidraulico.webp"), title: "3. Kit hidráulico completo", caption: "Documenta los 22 grupos hidráulicos desde el tanque hasta los emisores. Las cantidades y rangos corresponden a la lista maestra del prototipo.", status: "Validada", tone: "valid" },
-  { src: assetPath("infografias/04-kit-sensores.webp"), title: "4. Kit de sensores", caption: "Describe medición de suelo, ambiente, tanque, energía y acondicionamiento de señales. El pluviómetro mostrado es opcional y no forma parte de la versión básica.", status: "Validada con opcional", tone: "note" },
-  { src: assetPath("infografias/05-kit-control-electronico.webp"), title: "5. Kit de control electrónico", caption: "Explica ESP32, RTC, memoria interna e interfaz local. La microSD y el expansor MCP23017 son opcionales y requieren revisar pines y firmware antes de incorporarlos.", status: "Validada con opcionales", tone: "note" },
-  { src: assetPath("infografias/06-kit-potencia-electrica.webp"), title: "6. Actuación y potencia eléctrica", caption: "Representa MOSFET, supresión inductiva, parada física, conversión y fusibles de ramal. Los valores finales se confirman midiendo la corriente de arranque.", status: "Validada", tone: "valid" },
-  { src: assetPath("infografias/07-kit-energia-solar.webp"), title: "7. Kit de energía solar", caption: "Integra panel de 150 W, controlador, AGM de 55 Ah, montaje, distribución y presupuesto energético. El módem 4G permanece opcional.", status: "Validada", tone: "valid" },
-  { src: assetPath("infografias/08-kit-cableado.webp"), title: "8. Cableado, conexiones y caja", caption: "Detalla caja IP65, riel, borneras, prensaestopas, calibres, terminales, canalización y etiquetado para una instalación mantenible.", status: "Validada", tone: "valid" },
-  { src: assetPath("infografias/10-kit-comunicaciones.webp"), title: "10. Comunicaciones y software", caption: "Resume Wi‑Fi, TLS, firmware, API, base de datos y aplicativo. El dominio y token visibles son ejemplos gráficos: ningún secreto real debe mostrarse ni guardarse en el repositorio.", status: "Validada con aviso de seguridad", tone: "note" },
+  { src: assetPath("infografias/02-kit-estructural.webp"), title: "2. Kit estructural y cama agrícola", caption: "Bastidor, fijaciones, impermeabilización, drenaje, divisores, sustrato y soportes. Coincide con la cama demostrativa de 2 × 1 m.", status: "Validada", tone: "valid", subimageSlug: "02-estructural" },
+  { src: assetPath("infografias/03-kit-hidraulico.webp"), title: "3. Kit hidráulico completo", caption: "Documenta los 22 grupos hidráulicos desde el tanque hasta los emisores. Las cantidades y rangos corresponden a la lista maestra del prototipo.", status: "Validada", tone: "valid", subimageSlug: "03-hidraulico" },
+  { src: assetPath("infografias/04-kit-sensores.webp"), title: "4. Kit de sensores", caption: "Describe medición de suelo, ambiente, tanque, energía y acondicionamiento de señales. El pluviómetro mostrado es opcional y no forma parte de la versión básica.", status: "Validada con opcional", tone: "note", subimageSlug: "04-sensores" },
+  { src: assetPath("infografias/05-kit-control-electronico.webp"), title: "5. Kit de control electrónico", caption: "Explica ESP32, RTC, memoria interna e interfaz local. La microSD y el expansor MCP23017 son opcionales y requieren revisar pines y firmware antes de incorporarlos.", status: "Validada con opcionales", tone: "note", subimageSlug: "05-control" },
+  { src: assetPath("infografias/06-kit-potencia-electrica.webp"), title: "6. Actuación y potencia eléctrica", caption: "Representa MOSFET, supresión inductiva, parada física, conversión y fusibles de ramal. Los valores finales se confirman midiendo la corriente de arranque.", status: "Validada", tone: "valid", subimageSlug: "06-potencia" },
+  { src: assetPath("infografias/07-kit-energia-solar.webp"), title: "7. Kit de energía solar", caption: "Integra panel de 150 W, controlador, AGM de 55 Ah, montaje, distribución y presupuesto energético. El módem 4G permanece opcional.", status: "Validada", tone: "valid", subimageSlug: "07-solar" },
+  { src: assetPath("infografias/08-kit-cableado.webp"), title: "8. Cableado, conexiones y caja", caption: "Detalla caja IP65, riel, borneras, prensaestopas, calibres, terminales, canalización y etiquetado para una instalación mantenible.", status: "Validada", tone: "valid", subimageSlug: "08-cableado" },
+  { src: assetPath("infografias/10-kit-comunicaciones.webp"), title: "10. Comunicaciones y software", caption: "Resume Wi‑Fi, TLS, firmware, API, base de datos y aplicativo. El dominio y token visibles son ejemplos gráficos: ningún secreto real debe mostrarse ni guardarse en el repositorio.", status: "Validada con aviso de seguridad", tone: "note", subimageSlug: "10-comunicaciones" },
 ];
 
 const infographicSubimageDefinitions = [
@@ -103,6 +104,11 @@ const infographicSubimageDefinitions = [
   { slug: "06-potencia", title: "Kit de potencia", labels: ["6.1 Módulos MOSFET", "6.2 Resistencias de compuerta", "6.3 Resistencias pull-down", "6.4 Diodos de rueda libre", "6.5 Relé o contactor DC", "6.6 Parada de emergencia", "6.7 Diodo TVS", "6.8 Condensadores", "6.9 Convertidor DC-DC", "6.10 Fusible de control", "6.11 Fusible de válvulas", "6.12 Fusible de bomba"] },
   { slug: "07-solar", title: "Kit solar", labels: ["7.1 Panel solar", "7.2 Estructura del panel", "7.3 Cable solar", "7.4 Conectores MC4", "7.5 Controlador de carga", "7.6 Batería AGM", "7.7 Bandeja y correa", "7.8 Fusible principal", "7.9 Seccionador principal", "7.10 Protección de polaridad", "7.11 Barras de distribución", "7.12 Router o módem 4G", "7.13 Presupuesto energético"] },
   { slug: "08-cableado", title: "Kit de cableado", labels: ["8.1 Caja IP65", "8.2 Placa de montaje", "8.3 Borneras", "8.4 Prensaestopas", "8.5 Cable de potencia", "8.6 Código de colores", "8.7 Terminales de anillo", "8.8 Punteras o ferrules", "8.9 Conectores impermeables", "8.10 Tubo termorretráctil", "8.11 Canaleta y manguera", "8.12 Cable apantallado", "8.13 Bridas resistentes UV", "8.14 Etiquetas"] },
+  { slug: "flujo-energia", title: "Flujo de energía", labels: ["1 Panel solar", "2 Controlador de carga", "3 Batería de 12 V", "4 Seccionador y fusible", "5 Barra de distribución", "5A Ramal de bomba", "5B Ramal de electroválvulas", "5C Control ESP32 y sensores"] },
+  { slug: "flujo-informacion", title: "Flujo de información", labels: ["1 Sensores del sistema", "2 Controlador ESP32", "3 Decisión autónoma", "4 Bomba y válvulas", "5 Comunicación HTTPS", "6 API de telemetría", "7 Base de datos", "8 Aplicativo web", "9 Solicitud desde la web", "10 Orden con vencimiento", "11 API de control", "12 Recepción en ESP32", "13 Validación física", "14 Ejecución o rechazo"] },
+  { slug: "sistema-hidraulico", title: "Sistema hidráulico", labels: ["Depósito y salida de agua", "Bomba y medición de caudal", "Controlador y electroválvulas", "Zona A de hortalizas", "Zona B con microaspersión", "Zona C con riego localizado", "Tubería principal y ramales"] },
+  { slug: "09-conexiones-principal", title: "Plano eléctrico principal", labels: ["Sensores y señales de entrada", "Controlador ESP32 y cableado", "Actuadores y protecciones", "Tabla de pines y funciones", "Dispositivos del bus I²C", "Direcciones I²C esperadas", "Buenas prácticas de conexión", "Recomendaciones de montaje"] },
+  { slug: "09-conexiones-didactico", title: "Plano eléctrico didáctico", labels: ["Sensores digitales y analógicos", "ESP32 y conexiones centrales", "Bomba, válvulas y emergencia", "Tabla didáctica de señales", "Módulos del bus I²C", "Tabla de direcciones I²C"] },
   { slug: "10-comunicaciones", title: "Comunicaciones", labels: ["10.1 Red Wi-Fi", "10.2 Certificado TLS", "10.3 Token del dispositivo", "10.4 Firmware del ESP32", "10.5 API web", "10.6 Base de datos", "10.7 Aplicativo web"] },
 ];
 
@@ -116,8 +122,8 @@ const infographicSubimageGroups = infographicSubimageDefinitions.map((group) => 
 }));
 
 const connectionInfographics: VisualItem[] = [
-  { src: assetPath("infografias/09-plano-conexiones-horizontal.webp"), title: "9. Plano de conexiones — versión principal", caption: "Es la referencia visual preferida. Antes del montaje debe contrastarse con la tabla oficial: flotador superior GPIO 23, inferior GPIO 33, ultrasónico TRIG GPIO 32 y ECHO GPIO 35, emergencia GPIO 13 e I²C en GPIO 21/22.", status: "Plano principal validado", tone: "valid" },
-  { src: assetPath("infografias/09-plano-conexiones-vertical.webp"), title: "9. Plano de conexiones — versión didáctica vertical", caption: "Útil para explicar buses y actuadores, pero contiene llamadas gráficas contradictorias entre flotador y ultrasonido. No debe emplearse para cablear; prevalecen la tabla oficial, el firmware y el plano principal validado.", status: "Solo referencia didáctica", tone: "note" },
+  { src: assetPath("infografias/09-plano-conexiones-horizontal.webp"), title: "9. Plano de conexiones — versión principal", caption: "Es la referencia visual preferida. Antes del montaje debe contrastarse con la tabla oficial: flotador superior GPIO 23, inferior GPIO 33, ultrasónico TRIG GPIO 32 y ECHO GPIO 35, emergencia GPIO 13 e I²C en GPIO 21/22.", status: "Plano principal validado", tone: "valid", subimageSlug: "09-conexiones-principal" },
+  { src: assetPath("infografias/09-plano-conexiones-vertical.webp"), title: "9. Plano de conexiones — versión didáctica vertical", caption: "Útil para explicar buses y actuadores, pero contiene llamadas gráficas contradictorias entre flotador y ultrasonido. No debe emplearse para cablear; prevalecen la tabla oficial, el firmware y el plano principal validado.", status: "Solo referencia didáctica", tone: "note", subimageSlug: "09-conexiones-didactico" },
 ];
 
 const componentCatalog = [
@@ -231,6 +237,7 @@ export default function IrrigationSite() {
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
   const [selectedImage, setSelectedImage] = useState<VisualItem | null>(null);
   const [activeSubimageGroup, setActiveSubimageGroup] = useState(infographicSubimageGroups[0].slug);
+  const [selectedSubimageGroup, setSelectedSubimageGroup] = useState<(typeof infographicSubimageGroups)[number] | null>(null);
   const [selectedComponent, setSelectedComponent] = useState<(typeof componentCatalog)[number] | null>(null);
   const [selectedMaterial, setSelectedMaterial] = useState<(typeof projectMaterials)[number] | null>(null);
   const [toast, setToast] = useState("");
@@ -281,6 +288,14 @@ export default function IrrigationSite() {
   const waterToday = useMemo(() => zones.reduce((sum, zone) => sum + zone.dailyLiters, 0), [zones]);
 
   function closeMenu() { setMobileMenu(false); }
+
+  function openSubimageGroup(slug?: string) {
+    if (!slug) return;
+    const group = infographicSubimageGroups.find((item) => item.slug === slug);
+    if (!group) return;
+    setActiveSubimageGroup(group.slug);
+    setSelectedSubimageGroup(group);
+  }
 
   async function confirmWatering(zone: Zone) {
     if (systemPaused) { setToast("El sistema está pausado. Reactiva el modo autónomo antes de regar."); setSelectedZone(null); return; }
@@ -422,12 +437,18 @@ export default function IrrigationSite() {
         <div className="infographic-library kit-infographics" aria-labelledby="kit-infographics-title">
           <div className="infographic-heading"><div><span className="eyebrow">Infografías técnicas por kit</span><h3 id="kit-infographics-title">Cada conjunto explicado visualmente.</h3></div><p>Las ocho láminas se ubicaron junto al catálogo de componentes. Selecciona cualquiera para verla completa; las notas indican elementos opcionales o precauciones que prevalecen sobre el contenido ilustrativo.</p></div>
           <div className="infographic-grid portrait-grid">
-            {kitInfographics.map((item) => <button key={item.src} className={`infographic-card ${item.tone ?? "valid"}`} onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}>
-              <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar infografía ↗</i></span>
-            </button>)}
+            {kitInfographics.map((item) => {
+              const group = infographicSubimageGroups.find((candidate) => candidate.slug === item.subimageSlug);
+              return <article key={item.src} className={`infographic-card-shell ${item.tone ?? "valid"}`}>
+                <button className="infographic-card" onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}>
+                  <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar infografía ↗</i></span>
+                </button>
+                {group && <button className="subimage-open-button" onClick={() => openSubimageGroup(group.slug)}><span>▦</span> Ver sus {group.items.length} subimágenes</button>}
+              </article>;
+            })}
           </div>
           <div className="subimage-explorer" aria-labelledby="subimage-title">
-            <div className="subimage-heading"><div><span className="eyebrow">104 recortes independientes</span><h3 id="subimage-title">Cada componente de las infografías, por separado.</h3></div><p>Selecciona un kit y abre cualquier subimagen para verla con mayor detalle. La lámina completa permanece disponible arriba como referencia técnica.</p></div>
+            <div className="subimage-heading"><div><span className="eyebrow">147 recortes independientes</span><h3 id="subimage-title">Cada elemento de todas las infografías, por separado.</h3></div><p>Selecciona una lámina y abre cualquier subimagen para verla con mayor detalle. También puedes entrar directamente desde el botón amarillo de cada tarjeta.</p></div>
             <div className="subimage-tabs" role="tablist" aria-label="Kits con subimágenes">
               {infographicSubimageGroups.map((group) => <button key={group.slug} role="tab" aria-selected={group.slug === visibleSubimageGroup.slug} className={group.slug === visibleSubimageGroup.slug ? "active" : ""} onClick={() => setActiveSubimageGroup(group.slug)}>{group.title}<span>{group.items.length}</span></button>)}
             </div>
@@ -475,9 +496,15 @@ export default function IrrigationSite() {
           <div className="infographic-library architecture-infographics" aria-labelledby="architecture-infographics-title">
             <div className="infographic-heading light-infographic-heading"><div><span className="eyebrow">Arquitectura visual</span><h3 id="architecture-infographics-title">Energía, datos y circulación del agua.</h3></div><p>Estas láminas explican las relaciones entre subsistemas. Las correcciones técnicas visibles debajo de cada imagen forman parte de su interpretación.</p></div>
             <div className="infographic-grid landscape-grid">
-              {architectureInfographics.map((item) => <button key={item.src} className={`infographic-card ${item.tone ?? "valid"}`} onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}>
-                <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar infografía ↗</i></span>
-              </button>)}
+              {architectureInfographics.map((item) => {
+                const group = infographicSubimageGroups.find((candidate) => candidate.slug === item.subimageSlug);
+                return <article key={item.src} className={`infographic-card-shell ${item.tone ?? "valid"}`}>
+                  <button className="infographic-card" onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}>
+                    <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar infografía ↗</i></span>
+                  </button>
+                  {group && <button className="subimage-open-button" onClick={() => openSubimageGroup(group.slug)}><span>▦</span> Ver sus {group.items.length} subimágenes</button>}
+                </article>;
+              })}
             </div>
           </div>
           <div className="safety-banner"><span>!</span><div><strong>La protección física siempre tiene prioridad.</strong><p>Una orden remota nunca puede anular emergencia, tanque vacío, batería baja, sobrepresión, falta de caudal ni tiempo máximo de bomba.</p></div></div>
@@ -527,9 +554,15 @@ export default function IrrigationSite() {
         <div className="infographic-library connection-infographics" aria-labelledby="connection-infographics-title">
           <div className="infographic-heading"><div><span className="eyebrow">Planos eléctricos</span><h3 id="connection-infographics-title">Conexiones del ESP32 verificadas antes del montaje.</h3></div><p>Se recibieron dos archivos horizontales idénticos y se almacenó una sola copia optimizada. La versión horizontal es la referencia principal; la vertical se conserva únicamente como apoyo didáctico por sus contradicciones internas.</p></div>
           <div className="infographic-grid connection-grid">
-            {connectionInfographics.map((item) => <button key={item.src} className={`infographic-card ${item.tone ?? "valid"}`} onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}>
-              <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar plano ↗</i></span>
-            </button>)}
+            {connectionInfographics.map((item) => {
+              const group = infographicSubimageGroups.find((candidate) => candidate.slug === item.subimageSlug);
+              return <article key={item.src} className={`infographic-card-shell ${item.tone ?? "valid"}`}>
+                <button className="infographic-card" onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}>
+                  <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar plano ↗</i></span>
+                </button>
+                {group && <button className="subimage-open-button" onClick={() => openSubimageGroup(group.slug)}><span>▦</span> Ver sus {group.items.length} subimágenes</button>}
+              </article>;
+            })}
           </div>
         </div>
         <TechnicalManual />
@@ -552,6 +585,11 @@ export default function IrrigationSite() {
         <div className="material-modal-copy"><span className="eyebrow">{selectedMaterial.kit} · Cantidad requerida: {selectedMaterial.quantity}</span><h2 id="material-title">{selectedMaterial.name}</h2><div className="material-spec"><strong>Especificación mínima</strong><p>{selectedMaterial.specification}</p></div><div><strong>Qué es y qué función cumple</strong><p>{selectedMaterial.role}</p></div><div><strong>Conexión e instalación</strong><p>{selectedMaterial.connection}</p></div><button onClick={() => setSelectedMaterial(null)}>Volver a la lista</button></div>
       </article></div>}
       {selectedZone && <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedZone(null); }}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="watering-title"><span className="modal-icon">⌁</span><span className="eyebrow">Orden remota protegida</span><h2 id="watering-title">Regar Zona {selectedZone.id}</h2><p>Se solicitará un pulso de <strong>0,40 litros</strong> para {selectedZone.crop}. El ESP32 validará tanque, batería, caudal, presión, emergencia y límite diario antes de activar la bomba.</p><div className="safety-checks"><span>✓ Tanque {telemetry.tankLevel} %</span><span>✓ Batería {telemetry.batteryPct} %</span><span>✓ Límite disponible</span></div><div className="modal-actions"><button onClick={() => setSelectedZone(null)}>Cancelar</button><button className="primary" onClick={() => void confirmWatering(selectedZone)}>Confirmar riego</button></div></div></div>}
+      {selectedSubimageGroup && <div className="modal-backdrop subimage-gallery-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedSubimageGroup(null); }}><section className="subimage-gallery-modal" role="dialog" aria-modal="true" aria-labelledby="subimage-gallery-title">
+        <button className="component-close" onClick={() => setSelectedSubimageGroup(null)} aria-label="Cerrar galería de subimágenes">×</button>
+        <header><span className="eyebrow">Infografía separada · {selectedSubimageGroup.items.length} recortes</span><h2 id="subimage-gallery-title">{selectedSubimageGroup.title}</h2><p>Cada recorte conserva la imagen y la información técnica de su sección original. Selecciona uno para ampliarlo en calidad visible.</p></header>
+        <div className="subimage-modal-grid">{selectedSubimageGroup.items.map((item) => <button key={item.src} onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}><img src={item.src} alt={item.title} loading="lazy" /><span><strong>{item.title}</strong><small>Abrir en alta calidad ↗</small></span></button>)}</div>
+      </section></div>}
       {selectedImage && <div className="modal-backdrop image-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedImage(null); }}><figure className="image-modal" role="dialog" aria-modal="true" aria-label={selectedImage.title}><button onClick={() => setSelectedImage(null)} aria-label="Cerrar imagen">×</button><img src={selectedImage.src} alt={selectedImage.title} /><figcaption><strong>{selectedImage.title}</strong><p>{selectedImage.caption}</p></figcaption></figure></div>}
       {toast && <div className="toast" role="status"><span>✓</span>{toast}</div>}
     </main>
