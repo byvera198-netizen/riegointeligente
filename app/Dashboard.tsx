@@ -95,6 +95,26 @@ const kitInfographics: VisualItem[] = [
   { src: assetPath("infografias/10-kit-comunicaciones.webp"), title: "10. Comunicaciones y software", caption: "Resume Wi‑Fi, TLS, firmware, API, base de datos y aplicativo. El dominio y token visibles son ejemplos gráficos: ningún secreto real debe mostrarse ni guardarse en el repositorio.", status: "Validada con aviso de seguridad", tone: "note" },
 ];
 
+const infographicSubimageDefinitions = [
+  { slug: "02-estructural", title: "Kit estructural", labels: ["2.1 Bastidor de la cama", "2.2 Tornillos y fijaciones", "2.3 Patas niveladoras", "2.4 Membrana impermeable", "2.5 Geotextil", "2.6 Capa de drenaje", "2.7 Salida de drenaje", "2.8 Divisores de zona", "2.9 Sustrato", "2.10 Bandeja de contención", "2.11 Soporte técnico vertical", "2.12 Letreros de identificación"] },
+  { slug: "03-hidraulico", title: "Kit hidráulico", labels: ["3.1 Tanque de agua con tapa", "3.2 Pasamuros del tanque", "3.3 Válvula manual de bola", "3.4 Filtro de 120 mesh", "3.5 Manguera de succión", "3.6 Bomba de diafragma", "3.7 Soportes antivibración", "3.8 Abrazaderas", "3.9 Válvula antirretorno", "3.10 Regulador de presión", "3.11 Manómetro mecánico", "3.12 Sensor de presión", "3.13 Caudalímetro Hall", "3.14 Colector de tres salidas", "3.15 Electroválvulas", "3.16 Tubería principal", "3.17 Microtubo", "3.18 Microaspersores", "3.19 Estacas para emisores", "3.20 Conectores hidráulicos", "3.21 Cinta PTFE y sellador", "3.22 Sujetadores de tubería"] },
+  { slug: "04-sensores", title: "Kit de sensores", labels: ["4.1 Sensores de humedad", "4.2 Conversor ADS1115", "4.3 Alimentación conmutada", "4.4 Sensores DS18B20", "4.5 Sensor BME280", "4.6 Garita ambiental", "4.7 Sensor ultrasónico", "4.8 Flotador inferior", "4.9 Flotador superior", "4.10 Sensor INA260", "4.11 Medición de batería", "4.12 Pluviómetro"] },
+  { slug: "05-control", title: "Kit de control", labels: ["5.1 ESP32 DevKit", "5.2 Reloj DS3231", "5.3 Batería del RTC", "5.4 Memoria NVS", "5.5 Módulo microSD", "5.6 Pantalla OLED", "5.7 Expansor MCP23017", "5.8 Botón automático manual", "5.9 Botones de prueba", "5.10 Indicadores LED", "5.11 Zumbador", "5.12 Watchdog"] },
+  { slug: "06-potencia", title: "Kit de potencia", labels: ["6.1 Módulos MOSFET", "6.2 Resistencias de compuerta", "6.3 Resistencias pull-down", "6.4 Diodos de rueda libre", "6.5 Relé o contactor DC", "6.6 Parada de emergencia", "6.7 Diodo TVS", "6.8 Condensadores", "6.9 Convertidor DC-DC", "6.10 Fusible de control", "6.11 Fusible de válvulas", "6.12 Fusible de bomba"] },
+  { slug: "07-solar", title: "Kit solar", labels: ["7.1 Panel solar", "7.2 Estructura del panel", "7.3 Cable solar", "7.4 Conectores MC4", "7.5 Controlador de carga", "7.6 Batería AGM", "7.7 Bandeja y correa", "7.8 Fusible principal", "7.9 Seccionador principal", "7.10 Protección de polaridad", "7.11 Barras de distribución", "7.12 Router o módem 4G", "7.13 Presupuesto energético"] },
+  { slug: "08-cableado", title: "Kit de cableado", labels: ["8.1 Caja IP65", "8.2 Placa de montaje", "8.3 Borneras", "8.4 Prensaestopas", "8.5 Cable de potencia", "8.6 Código de colores", "8.7 Terminales de anillo", "8.8 Punteras o ferrules", "8.9 Conectores impermeables", "8.10 Tubo termorretráctil", "8.11 Canaleta y manguera", "8.12 Cable apantallado", "8.13 Bridas resistentes UV", "8.14 Etiquetas"] },
+  { slug: "10-comunicaciones", title: "Comunicaciones", labels: ["10.1 Red Wi-Fi", "10.2 Certificado TLS", "10.3 Token del dispositivo", "10.4 Firmware del ESP32", "10.5 API web", "10.6 Base de datos", "10.7 Aplicativo web"] },
+];
+
+const infographicSubimageGroups = infographicSubimageDefinitions.map((group) => ({
+  ...group,
+  items: group.labels.map((label, index): VisualItem => ({
+    src: assetPath(`infografias/subimagenes/${group.slug}/${String(index + 1).padStart(2, "0")}.webp`),
+    title: label,
+    caption: `Subimagen extraída de la infografía ${group.title}. Conserva la fotografía y la información técnica de la lámina original.`,
+  })),
+}));
+
 const connectionInfographics: VisualItem[] = [
   { src: assetPath("infografias/09-plano-conexiones-horizontal.webp"), title: "9. Plano de conexiones — versión principal", caption: "Es la referencia visual preferida. Antes del montaje debe contrastarse con la tabla oficial: flotador superior GPIO 23, inferior GPIO 33, ultrasónico TRIG GPIO 32 y ECHO GPIO 35, emergencia GPIO 13 e I²C en GPIO 21/22.", status: "Plano principal validado", tone: "valid" },
   { src: assetPath("infografias/09-plano-conexiones-vertical.webp"), title: "9. Plano de conexiones — versión didáctica vertical", caption: "Útil para explicar buses y actuadores, pero contiene llamadas gráficas contradictorias entre flotador y ultrasonido. No debe emplearse para cablear; prevalecen la tabla oficial, el firmware y el plano principal validado.", status: "Solo referencia didáctica", tone: "note" },
@@ -210,6 +230,7 @@ export default function IrrigationSite() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
   const [selectedImage, setSelectedImage] = useState<VisualItem | null>(null);
+  const [activeSubimageGroup, setActiveSubimageGroup] = useState(infographicSubimageGroups[0].slug);
   const [selectedComponent, setSelectedComponent] = useState<(typeof componentCatalog)[number] | null>(null);
   const [selectedMaterial, setSelectedMaterial] = useState<(typeof projectMaterials)[number] | null>(null);
   const [toast, setToast] = useState("");
@@ -217,6 +238,7 @@ export default function IrrigationSite() {
   const [systemPaused, setSystemPaused] = useState(false);
   const [lastSync, setLastSync] = useState("hace 8 s");
   const [telemetry, setTelemetry] = useState({ tankLevel: 78, batteryVoltage: 13.1, batteryPct: 84, solarWatts: 128, pressureBar: 1, flowLpm: 1.8, ambientTemp: 29.4, ambientHumidity: 71 });
+  const visibleSubimageGroup = infographicSubimageGroups.find((group) => group.slug === activeSubimageGroup) ?? infographicSubimageGroups[0];
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -404,6 +426,15 @@ export default function IrrigationSite() {
               <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar infografía ↗</i></span>
             </button>)}
           </div>
+          <div className="subimage-explorer" aria-labelledby="subimage-title">
+            <div className="subimage-heading"><div><span className="eyebrow">104 recortes independientes</span><h3 id="subimage-title">Cada componente de las infografías, por separado.</h3></div><p>Selecciona un kit y abre cualquier subimagen para verla con mayor detalle. La lámina completa permanece disponible arriba como referencia técnica.</p></div>
+            <div className="subimage-tabs" role="tablist" aria-label="Kits con subimágenes">
+              {infographicSubimageGroups.map((group) => <button key={group.slug} role="tab" aria-selected={group.slug === visibleSubimageGroup.slug} className={group.slug === visibleSubimageGroup.slug ? "active" : ""} onClick={() => setActiveSubimageGroup(group.slug)}>{group.title}<span>{group.items.length}</span></button>)}
+            </div>
+            <div className="subimage-grid" role="tabpanel" aria-label={`Subimágenes de ${visibleSubimageGroup.title}`}>
+              {visibleSubimageGroup.items.map((item) => <button key={item.src} onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}><img src={item.src} alt={item.title} loading="lazy" /><span><strong>{item.title}</strong><small>Ampliar subimagen ↗</small></span></button>)}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -512,7 +543,7 @@ export default function IrrigationSite() {
 
       {selectedComponent && <div className="modal-backdrop component-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedComponent(null); }}><article className="component-modal" role="dialog" aria-modal="true" aria-labelledby="component-title">
         <button className="component-close" onClick={() => setSelectedComponent(null)} aria-label="Cerrar descripción del componente">×</button>
-        <div className="component-specific-photo" role="img" aria-label={`Acercamiento fotográfico de ${selectedComponent.title}`} style={{ backgroundImage: `url(${assetPath("catalogo-componentes-v1.webp")})`, backgroundPosition: selectedComponent.focus, backgroundSize: selectedComponent.zoom }} />
+        <div className="component-specific-photo"><img src={componentCatalogImages[selectedComponent.id]} alt={`Fotografía ampliada de ${selectedComponent.title}`} /></div>
         <div className="component-modal-copy"><span className="eyebrow">{selectedComponent.number} · {selectedComponent.kit}</span><h2 id="component-title">{selectedComponent.title}</h2><p>{selectedComponent.summary}</p><div><strong>Conexión en el proyecto</strong><p>{selectedComponent.connection}</p></div><a href="#documentacion" onClick={() => setSelectedComponent(null)}>Consultar especificación completa →</a></div>
       </article></div>}
       {selectedMaterial && <div className="modal-backdrop material-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedMaterial(null); }}><article className="material-modal" role="dialog" aria-modal="true" aria-labelledby="material-title">

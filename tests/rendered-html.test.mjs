@@ -88,3 +88,13 @@ test("integra las infografías en su contexto y muestra sus validaciones", async
   assert.match(html, /Referencia de ampliación hidráulica/);
   assert.match(html, /infografias\/10-kit-comunicaciones\.webp/);
 });
+
+test("presenta subimágenes independientes y fotografías coherentes en el catálogo", async () => {
+  const response = await render();
+  const html = await response.text();
+  assert.match(html, /104 recortes independientes/);
+  assert.match(html, /Cada componente de las infografías, por separado/);
+  assert.match(html, /infografias\/subimagenes\/02-estructural\/01\.webp/);
+  assert.match(html, /materiales\/panel-solar-150w\.webp/);
+  assert.match(html, /materiales\/esp32-devkit\.webp/);
+});
