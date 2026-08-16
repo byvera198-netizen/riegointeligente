@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import ImplementationGuide from "./ImplementationGuide";
 import TechnicalManual from "./TechnicalManual";
 import { assetPath } from "./asset-path";
 
@@ -46,6 +47,7 @@ const navItems = [
   { id: "inicio", label: "Inicio" },
   { id: "proyecto", label: "El proyecto" },
   { id: "componentes", label: "Componentes" },
+  { id: "implementacion", label: "Implementación" },
   { id: "funcionamiento", label: "Funcionamiento" },
   { id: "dashboard", label: "Dashboard" },
   { id: "documentacion", label: "Documentación" },
@@ -458,6 +460,8 @@ export default function IrrigationSite() {
           </div>
         </div>
       </section>
+
+      <ImplementationGuide />
 
       <section className="final-project-section" aria-labelledby="final-project-title">
         <div className="section final-project-inner">

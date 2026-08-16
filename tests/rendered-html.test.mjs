@@ -103,3 +103,14 @@ test("presenta subimágenes independientes y fotografías coherentes en el catá
   assert.match(html, /materiales\/panel-solar-150w\.webp/);
   assert.match(html, /materiales\/esp32-devkit\.webp/);
 });
+
+test("incluye la guía completa de implementación y sus controles interactivos", async () => {
+  const response = await render();
+  const html = await response.text();
+  assert.match(html, /Guía de implementación completa/);
+  assert.match(html, /Preparar el proyecto y el lugar/);
+  assert.match(html, /Ejecutar las 21 pruebas de aceptación/);
+  assert.match(html, /Descargar guía/);
+  assert.match(html, /href="#implementacion"/);
+  assert.ok(existsSync(new URL("../public/guia-implementacion.md", import.meta.url)));
+});

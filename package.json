@@ -14,7 +14,7 @@
     "build:cloudflare": "npm run content:generate && vite build --config vite.static.config.ts --mode cloudflare",
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern dist-static --ignore-pattern work --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
