@@ -186,7 +186,7 @@ const phases: ImplementationPhase[] = [
     duration: "1–2 días",
     image: assetPath("infografias/10-kit-comunicaciones.webp"),
     objective: "Conservar la autonomía local y añadir telemetría y órdenes remotas seguras sin publicar credenciales.",
-    safety: "El token del dispositivo, la contraseña Wi‑Fi y los certificados reales nunca se guardan en GitHub ni se muestran en capturas o infografías.",
+    safety: "El token del dispositivo, la contraseña Wi‑Fi y los certificados reales nunca se guardan en GitHub ni se muestran en capturas o documentación visual.",
     tasks: [
       "Crear firmware/include/config.h desde config.example.h sin modificar ni publicar el archivo de ejemplo con secretos.",
       "Cargar SSID de 2,4 GHz, credencial, URL HTTPS, token exclusivo y certificado raíz válido.",

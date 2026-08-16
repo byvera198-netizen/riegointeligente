@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import ImplementationGuide from "./ImplementationGuide";
+import SystemFlows from "./SystemFlows";
 import TechnicalManual from "./TechnicalManual";
 import { assetPath } from "./asset-path";
 
@@ -47,6 +48,7 @@ const navItems = [
   { id: "inicio", label: "Inicio" },
   { id: "proyecto", label: "El proyecto" },
   { id: "componentes", label: "Componentes" },
+  { id: "flujos", label: "Flujos" },
   { id: "implementacion", label: "Implementación" },
   { id: "funcionamiento", label: "Funcionamiento" },
   { id: "dashboard", label: "Dashboard" },
@@ -119,7 +121,7 @@ const infographicSubimageGroups = infographicSubimageDefinitions.map((group) => 
   items: group.labels.map((label, index): VisualItem => ({
     src: assetPath(`infografias/subimagenes/${group.slug}/${String(index + 1).padStart(2, "0")}.webp`),
     title: label,
-    caption: `Subimagen extraída de la infografía ${group.title}. Conserva la fotografía y la información técnica de la lámina original.`,
+    caption: `Vista técnica extraída de ${group.title}. Conserva la fotografía y la información especializada de la lámina original.`,
   })),
 }));
 
@@ -437,20 +439,20 @@ export default function IrrigationSite() {
           </article>)}
         </div>
         <div className="infographic-library kit-infographics" aria-labelledby="kit-infographics-title">
-          <div className="infographic-heading"><div><span className="eyebrow">Infografías técnicas por kit</span><h3 id="kit-infographics-title">Cada conjunto explicado visualmente.</h3></div><p>Las ocho láminas se ubicaron junto al catálogo de componentes. Selecciona cualquiera para verla completa; las notas indican elementos opcionales o precauciones que prevalecen sobre el contenido ilustrativo.</p></div>
+          <div className="infographic-heading"><div><span className="eyebrow">Documentación técnica por subsistema</span><h3 id="kit-infographics-title">Arquitectura funcional y especificaciones de cada conjunto.</h3></div><p>Las ocho láminas se ubicaron junto al catálogo de componentes. Selecciona cualquiera para verla completa; las notas indican elementos opcionales o precauciones que prevalecen sobre el contenido ilustrativo.</p></div>
           <div className="infographic-grid portrait-grid">
             {kitInfographics.map((item) => {
               const group = infographicSubimageGroups.find((candidate) => candidate.slug === item.subimageSlug);
               return <article key={item.src} className={`infographic-card-shell ${item.tone ?? "valid"}`}>
                 <button className="infographic-card" onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}>
-                  <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar infografía ↗</i></span>
+                  <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar lámina técnica ↗</i></span>
                 </button>
                 {group && <button className="subimage-open-button" onClick={() => openSubimageGroup(group.slug)}><span>▦</span> Ver sus {group.items.length} subimágenes</button>}
               </article>;
             })}
           </div>
           <div className="subimage-explorer" aria-labelledby="subimage-title">
-            <div className="subimage-heading"><div><span className="eyebrow">147 recortes independientes</span><h3 id="subimage-title">Cada elemento de todas las infografías, por separado.</h3></div><p>Selecciona una lámina y abre cualquier subimagen para verla con mayor detalle. También puedes entrar directamente desde el botón amarillo de cada tarjeta.</p></div>
+            <div className="subimage-heading"><div><span className="eyebrow">147 vistas técnicas independientes</span><h3 id="subimage-title">Desglose técnico individual de los componentes y subsistemas representados.</h3></div><p>Selecciona una lámina y abre cualquier vista para analizar cada componente, conexión o subsistema con mayor detalle. También puedes entrar directamente desde el botón amarillo de cada tarjeta.</p></div>
             <div className="subimage-tabs" role="tablist" aria-label="Kits con subimágenes">
               {infographicSubimageGroups.map((group) => <button key={group.slug} role="tab" aria-selected={group.slug === visibleSubimageGroup.slug} className={group.slug === visibleSubimageGroup.slug ? "active" : ""} onClick={() => setActiveSubimageGroup(group.slug)}>{group.title}<span>{group.items.length}</span></button>)}
             </div>
@@ -460,6 +462,8 @@ export default function IrrigationSite() {
           </div>
         </div>
       </section>
+
+      <SystemFlows />
 
       <ImplementationGuide />
 
@@ -504,7 +508,7 @@ export default function IrrigationSite() {
                 const group = infographicSubimageGroups.find((candidate) => candidate.slug === item.subimageSlug);
                 return <article key={item.src} className={`infographic-card-shell ${item.tone ?? "valid"}`}>
                   <button className="infographic-card" onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}>
-                    <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar infografía ↗</i></span>
+                    <img src={item.src} alt={item.title} loading="lazy" /><span><b>{item.status}</b><strong>{item.title}</strong><small>{item.caption}</small><i>Ampliar lámina técnica ↗</i></span>
                   </button>
                   {group && <button className="subimage-open-button" onClick={() => openSubimageGroup(group.slug)}><span>▦</span> Ver sus {group.items.length} subimágenes</button>}
                 </article>;
@@ -591,7 +595,7 @@ export default function IrrigationSite() {
       {selectedZone && <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedZone(null); }}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="watering-title"><span className="modal-icon">⌁</span><span className="eyebrow">Orden remota protegida</span><h2 id="watering-title">Regar Zona {selectedZone.id}</h2><p>Se solicitará un pulso de <strong>0,40 litros</strong> para {selectedZone.crop}. El ESP32 validará tanque, batería, caudal, presión, emergencia y límite diario antes de activar la bomba.</p><div className="safety-checks"><span>✓ Tanque {telemetry.tankLevel} %</span><span>✓ Batería {telemetry.batteryPct} %</span><span>✓ Límite disponible</span></div><div className="modal-actions"><button onClick={() => setSelectedZone(null)}>Cancelar</button><button className="primary" onClick={() => void confirmWatering(selectedZone)}>Confirmar riego</button></div></div></div>}
       {selectedSubimageGroup && <div className="modal-backdrop subimage-gallery-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedSubimageGroup(null); }}><section className="subimage-gallery-modal" role="dialog" aria-modal="true" aria-labelledby="subimage-gallery-title">
         <button className="component-close" onClick={() => setSelectedSubimageGroup(null)} aria-label="Cerrar galería de subimágenes">×</button>
-        <header><span className="eyebrow">Infografía separada · {selectedSubimageGroup.items.length} recortes</span><h2 id="subimage-gallery-title">{selectedSubimageGroup.title}</h2><p>Cada recorte conserva la imagen y la información técnica de su sección original. Selecciona uno para ampliarlo en calidad visible.</p></header>
+        <header><span className="eyebrow">Desglose técnico · {selectedSubimageGroup.items.length} vistas independientes</span><h2 id="subimage-gallery-title">{selectedSubimageGroup.title}</h2><p>Cada vista conserva la imagen y la información técnica de su sección original. Selecciona una para ampliarla en calidad visible.</p></header>
         <div className="subimage-modal-grid">{selectedSubimageGroup.items.map((item) => <button key={item.src} onClick={() => setSelectedImage(item)} aria-label={`Ampliar ${item.title}`}><img src={item.src} alt={item.title} loading="lazy" /><span><strong>{item.title}</strong><small>Abrir en alta calidad ↗</small></span></button>)}</div>
       </section></div>}
       {selectedImage && <div className="modal-backdrop image-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedImage(null); }}><figure className="image-modal" role="dialog" aria-modal="true" aria-label={selectedImage.title}><button onClick={() => setSelectedImage(null)} aria-label="Cerrar imagen">×</button><img src={selectedImage.src} alt={selectedImage.title} /><figcaption><strong>{selectedImage.title}</strong><p>{selectedImage.caption}</p></figcaption></figure></div>}

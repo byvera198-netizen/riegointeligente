@@ -78,10 +78,10 @@ test("integra el manual completo y la navegación institucional", async () => {
   assert.match(html, /href="#documentacion"/);
 });
 
-test("integra las infografías en su contexto y muestra sus validaciones", async () => {
+test("integra la documentación técnica en su contexto y muestra sus validaciones", async () => {
   const response = await render();
   const html = await response.text();
-  assert.match(html, /Infografías técnicas por kit/);
+  assert.match(html, /Documentación técnica por subsistema/);
   assert.match(html, /Energía, datos y circulación del agua/);
   assert.match(html, /Plano de conexiones — versión principal/);
   assert.match(html, /batería de 7 Ah dibujada es ilustrativa/);
@@ -93,8 +93,8 @@ test("integra las infografías en su contexto y muestra sus validaciones", async
 test("presenta subimágenes independientes y fotografías coherentes en el catálogo", async () => {
   const response = await render();
   const html = await response.text();
-  assert.match(html, /147 recortes independientes/);
-  assert.match(html, /Cada elemento de todas las infografías, por separado/);
+  assert.match(html, /147 vistas técnicas independientes/);
+  assert.match(html, /Desglose técnico individual de los componentes y subsistemas representados/);
   assert.match(html, /subimage-open-button/);
   assert.match(html, /Ver sus/);
   assert.match(html, /infografias\/subimagenes\/02-estructural\/01\.webp/);
@@ -113,4 +113,16 @@ test("incluye la guía completa de implementación y sus controles interactivos"
   assert.match(html, /Descargar guía/);
   assert.match(html, /href="#implementacion"/);
   assert.ok(existsSync(new URL("../public/guia-implementacion.md", import.meta.url)));
+});
+
+test("presenta los tres flujos del sistema y el informe editable", async () => {
+  const response = await render();
+  const html = await response.text();
+  assert.match(html, /Tres flujos que explican cómo funciona el proyecto/);
+  assert.match(html, /flujos\/flujo-energia\.webp/);
+  assert.match(html, /flujos\/flujo-informacion\.webp/);
+  assert.match(html, /flujos\/flujo-agua\.webp/);
+  assert.match(html, /Descargar informe editable/);
+  assert.ok(existsSync(new URL("../public/informe-completo-sistema-riego-inteligente-1-0.docx", import.meta.url)));
+  assert.ok(existsSync(new URL("../public/informe-completo-sistema-riego-inteligente-1-0.md", import.meta.url)));
 });

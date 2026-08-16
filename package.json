@@ -8,6 +8,7 @@
   "scripts": {
     "content:generate": "node scripts/generate-project-content.mjs",
     "images:extract": "node scripts/extract-infographic-subimages.mjs",
+    "images:flows": "node scripts/prepare-system-flows.mjs",
     "dev": "npm run content:generate && vinext dev",
     "build": "npm run content:generate && vinext build",
     "build:github": "npm run content:generate && vite build --config vite.static.config.ts --mode github",
