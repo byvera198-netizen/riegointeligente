@@ -76,3 +76,15 @@ test("integra el manual completo y la navegación institucional", async () => {
   assert.match(html, /href="#funcionamiento"/);
   assert.match(html, /href="#documentacion"/);
 });
+
+test("integra las infografías en su contexto y muestra sus validaciones", async () => {
+  const response = await render();
+  const html = await response.text();
+  assert.match(html, /Infografías técnicas por kit/);
+  assert.match(html, /Energía, datos y circulación del agua/);
+  assert.match(html, /Plano de conexiones — versión principal/);
+  assert.match(html, /batería de 7 Ah dibujada es ilustrativa/);
+  assert.match(html, /No debe emplearse para cablear/);
+  assert.match(html, /Referencia de ampliación hidráulica/);
+  assert.match(html, /infografias\/10-kit-comunicaciones\.webp/);
+});
